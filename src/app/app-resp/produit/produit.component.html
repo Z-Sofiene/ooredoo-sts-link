@@ -1,0 +1,154 @@
+<div class="header-body">
+  <h1>Liste des Produits</h1>
+</div>
+
+<a class="submit-btn btn-sm" (click)="toggleAddForm()">
+  <i class="fa fa-plus"></i>
+  {{ showAddForm ? 'fermer' : 'Ajouter un Article' }}
+</a>
+
+<!-- Filters -->
+<div class="filters">
+  <div class="filter-group">
+    <label for="filter-nom">Article</label>
+    <input type="text" id="filter-nom" [(ngModel)]="filterTitre"
+           placeholder="Filtrer par nom du produit" (input)="applyFilters()">
+  </div>
+
+  <div class="filter-group">
+    <label for="filter-source">Source</label>
+    <select id="filter-source" [(ngModel)]="filterSourceId" (change)="applyFilters()">
+      <option [ngValue]="null">Toutes</option>
+      <option *ngFor="let source of uniqueSources" [ngValue]="source.id">{{ source.nomOperateur }}</option>
+    </select>
+  </div>
+
+  <div class="filter-group">
+    <label for="sort-by">Trier par</label>
+    <select id="sort-by" [(ngModel)]="sortBy" (change)="applySorting()">
+      <option value="">Sélectionner</option>
+      <option value="titre">Titre article</option>
+      <option value="operateur.nomOperateur">Source</option>
+    </select>
+  </div>
+
+  <div class="filter-group" *ngIf="sortBy">
+    <label for="sort-order">Ordre</label>
+    <select id="sort-order" [(ngModel)]="sortOrder" (change)="applySorting()">
+      <option value="asc">Croissant (A-Z)</option>
+      <option value="desc">Décroissant (Z-A)</option>
+    </select>
+  </div>
+</div>
+
+<!-- Produits Table -->
+<div class="table-container">
+  <h2><strong>Liste des Articles avec Produits</strong></h2>
+  <table>
+    <thead>
+    <tr>
+      <th>Article</th>
+      <th>Produit</th>
+      <th>Quantité</th>
+      <th>Source</th>
+      <th>Par STS</th>
+      <th class="text-center">Actions</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr *ngFor="let prod of paginatedProduits">
+      <td><strong>{{ prod.nomArticle }} (en {{ prod.unite }})</strong></td>
+      <td><strong>{{ prod.titre }}</strong></td>
+      <td>{{ prod.quantite }}</td>
+      <td><i class="fa fa-industry text-red-900"></i> {{ prod.operateur.nomOperateur }}</td>
+      <td>
+        <div *ngIf="prod.articleSTS">Oui</div>
+        <div *ngIf="!prod.articleSTS">Non</div>
+      </td>
+      <td class="actions">
+        <button class="btn btn-warning btn-sm" (click)="openUpdateForm(prod, 'produit')">
+          <i class="fa fa-edit"></i>
+        </button>
+        <button class="btn btn-danger btn-sm" (click)="deleteProduit(prod.id)">
+          <i class="fa fa-trash"></i>
+        </button>
+      </td>
+    </tr>
+    </tbody>
+  </table>
+
+  <!-- Produits Pagination -->
+  <div class="pagination" *ngIf="totalPages > 1">
+    <div class="pagination-info">
+      {{ (currentPage - 1) * pageSize + 1 }} -
+      {{ Math.min(currentPage * pageSize, filteredProduits.length) }}
+      sur {{ filteredProduits.length }} produits
+    </div>
+    <div class="pagination-controls">
+      <button (click)="goToPage(currentPage - 1)" [disabled]="currentPage === 1">Précédent</button>
+      <span *ngFor="let page of getPageNumbers()">
+        <button (click)="goToPage(page)" [class.active]="currentPage === page">{{ page }}</button>
+      </span>
+      <button (click)="goToPage(currentPage + 1)" [disabled]="currentPage === totalPages">Suivant</button>
+    </div>
+  </div>
+</div>
+
+<!-- Articles Table -->
+<h2><strong>Liste des Articles sans Produits</strong></h2>
+<div class="table-container">
+  <table>
+    <thead>
+    <tr>
+      <th>Article</th>
+      <th>Source</th>
+      <th>Par STS</th>
+      <th class="text-center">Actions</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr *ngFor="let art of paginatedArticles">
+      <td><strong>{{ art.nomArticle }} (en {{ art.unite }})</strong></td>
+      <td><i class="fa fa-industry text-red-900"></i> {{ art.operateur.nomOperateur }}</td>
+      <td>
+        <div *ngIf="art.articleSTS">Oui</div>
+        <div *ngIf="!art.articleSTS">Non</div>
+      </td>
+      <td class="actions">
+        <button class="btn btn-warning btn-sm" (click)="openUpdateForm(art, 'article')">
+          <i class="fa fa-edit"></i>
+        </button>
+        <button class="btn btn-danger btn-sm" (click)="deleteProduit(art.id)">
+          <i class="fa fa-trash"></i>
+        </button>
+      </td>
+    </tr>
+    </tbody>
+  </table>
+
+  <!-- Articles Pagination -->
+  <div class="pagination" *ngIf="totalPagesArticles > 1">
+    <div class="pagination-info">
+      {{ (currentPageArticles - 1) * pageSizeArticles + 1 }} -
+      {{ Math.min(currentPageArticles * pageSizeArticles, filteredArticles.length) }}
+      sur {{ filteredArticles.length }} articles
+    </div>
+    <div class="pagination-controls">
+      <button (click)="goToPageArticles(currentPageArticles - 1)" [disabled]="currentPageArticles === 1">Précédent</button>
+      <span *ngFor="let page of getPageNumbersArticles()">
+        <button (click)="goToPageArticles(page)" [class.active]="currentPageArticles === page">{{ page }}</button>
+      </span>
+      <button (click)="goToPageArticles(currentPageArticles + 1)" [disabled]="currentPageArticles === totalPagesArticles">Suivant</button>
+    </div>
+  </div>
+</div>
+
+<!-- Modal for Add/Update Produit -->
+<div *ngIf="showAddForm" class="fixed inset-0 flex items-center justify-center z-50">
+  <app-add-produit
+    [itemToUpdate]="selectedItem"
+    [isUpdateMode]="isUpdateMode"
+    (refresh)="handleFormSuccess()"
+    (close)="toggleAddForm()">
+  </app-add-produit>
+</div>

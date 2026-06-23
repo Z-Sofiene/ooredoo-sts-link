@@ -1,0 +1,90 @@
+
+    <div class="header-body">
+      <h1>Tableau de bord</h1>
+    </div>
+
+    <!-- Summary Cards -->
+    <div class="summary-cards">
+      <div class="summary-card">
+        <h3>Total Raccordements</h3>
+        <p>{{ raccordements.length }}</p>
+      </div>
+
+      <div class="summary-card">
+        <h3>Total Projets</h3>
+        <p>{{ getUniqueProjets().length }}</p>
+      </div>
+
+      <div class="summary-card">
+        <h3>Responsables</h3>
+        <p>{{ projetsByResponsableData.labels?.length || 0 }}</p>
+      </div>
+
+      <div class="summary-card">
+        <h3>Chefs d’équipe</h3>
+        <p>{{ projetsByChefEquipeData.labels?.length || 0 }}</p>
+      </div>
+    </div>
+
+    <!-- Charts Section -->
+    <div class="charts-card">
+      <h2>Visualisations des données</h2>
+
+      <div class="charts-grid">
+
+        <!-- État des raccordements -->
+        <div class="chart-card">
+          <h3>État des raccordements</h3>
+          <canvas
+            baseChart
+            [data]="etatData"
+            [type]="'pie'">
+          </canvas>
+        </div>
+
+        <!-- Type de raccordements -->
+        <div class="chart-card">
+          <h3>Type de raccordements</h3>
+          <canvas
+            baseChart
+            [data]="typeData"
+            [type]="'pie'">
+          </canvas>
+        </div>
+
+        <!-- Projets par responsable -->
+        <div class="chart-card">
+          <h3>Projets par responsable</h3>
+          <canvas
+            baseChart
+            [data]="projetsByResponsableData"
+            [type]="'bar'"
+            [options]="barOptions">
+          </canvas>
+        </div>
+
+        <!-- Projets par chef d’équipe (NEW) -->
+        <div class="chart-card">
+          <h3>Projets par chef d’équipe</h3>
+          <canvas
+            baseChart
+            [data]="projetsByChefEquipeData"
+            [type]="'bar'"
+            [options]="barOptions">
+          </canvas>
+        </div>
+
+        <!-- Projets par opérateur -->
+        <div class="chart-card">
+          <h3>Projets par opérateur</h3>
+          <canvas
+            baseChart
+            [data]="projetsByOperateurData"
+            [type]="'bar'"
+            [options]="barOptions">
+          </canvas>
+        </div>
+
+      </div>
+    </div>
+

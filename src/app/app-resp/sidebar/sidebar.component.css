@@ -1,0 +1,402 @@
+:host {
+  /* Premium Light Glass Palette (INVERSED) */
+  --glass-bg: rgb(248 250 252 / 85%);          /* was dark -> now light */
+  --glass-border: rgb(15 23 42 / 10%);         /* was white border -> now dark border */
+  --glass-blur: 14px;
+
+  --sidebar-bg: rgb(248 250 252 / 85%);
+  --accent-primary: #0ea5e9;                   /* keep it vibrant */
+  --accent-secondary: #14b8a6;
+  --accent-glow: rgb(14 165 233 / 22%);
+
+  --text-main: rgb(15 23 42 / 85%);            /* was light -> now dark */
+  --text-bright: #0f172a;                      /* bright text becomes dark */
+  --text-muted: rgb(71 85 105 / 80%);
+
+  --nav-hover-bg: rgb(15 23 42 / 6%);
+  --nav-active-bg: rgb(14 165 233 / 12%);
+
+  --transition-smooth: cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* =========================================================
+   Sidebar Container (LIGHT)
+========================================================= */
+.sidebar-container {
+  position: fixed;
+  top: 1rem;
+  bottom: 1rem;
+  left: 1rem;
+  width: 270px;
+  z-index: 50;
+
+  background: linear-gradient(
+    180deg,
+    rgb(248 250 252 / 92%),
+    rgb(241 245 249 / 85%)
+  );
+
+  backdrop-filter: blur(var(--glass-blur));
+  border: 1px solid var(--glass-border);
+  border-radius: 1.6rem;
+
+  box-shadow:
+    0 18px 55px rgb(15 23 42 / 10%),
+    inset 0 1px 0 rgb(255 255 255 / 60%);
+
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+
+  color: var(--text-main);
+}
+
+.sidebar {
+  position: relative;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+/* =========================================================
+   Floating Bubbles Background (LIGHT)
+========================================================= */
+.sidebar-bubbles {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  overflow: hidden;
+  z-index: 0;
+}
+
+.sidebar-bubble {
+  position: absolute;
+  bottom: -120px;
+  border-radius: 50%;
+  animation: floatUp 25s infinite linear;
+
+  background: radial-gradient(
+    circle at 30% 30%,
+    rgb(14 165 233 / 10%),
+    rgb(15 23 42 / 2%)
+  );
+
+  border: 1px solid rgb(15 23 42 / 6%);
+}
+
+.sidebar-bubble:nth-child(1) { width: 60px; height: 60px; left: 10%; animation-duration: 18s; }
+.sidebar-bubble:nth-child(2) { width: 100px; height: 100px; left: 35%; animation-duration: 28s; animation-delay: 2s; }
+.sidebar-bubble:nth-child(3) { width: 80px; height: 80px; left: 60%; animation-duration: 22s; animation-delay: 5s; }
+.sidebar-bubble:nth-child(4) { width: 120px; height: 120px; left: 85%; animation-duration: 35s; animation-delay: 1s; }
+.sidebar-bubble:nth-child(5) { width: 50px; height: 50px; left: 50%; animation-duration: 20s; animation-delay: 3s; }
+
+/* =========================================================
+   Header & Logo
+========================================================= */
+.sidebar-header {
+  padding: 1.7rem 1.4rem 1.2rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 2;
+}
+@keyframes logoFloatSpin {
+  0%   { transform: translateY(0) rotateY(0deg); }
+  10%   { transform: translateY(-4px) rotateY(45deg); }
+  20%  { transform: translateY(-8px) rotateY(90deg); }
+  30%   { transform: translateY(-4px) rotateY(45deg); }
+  40%  { transform: translateY(0) rotateY(0deg); }
+  50%   { transform: translateY(4px) rotateY(-45deg); }
+  60%  { transform: translateY(8px) rotateY(-90deg); }
+  70%   { transform: translateY(4px) rotateY(-45deg); }
+  80% { transform: translateY(0) rotateY(0deg); }
+  100% { transform: translateY(0) rotateY(0deg); }
+}
+
+.logo-wrapper {
+  animation: logoFloatSpin 6s linear infinite; /* 6s for full rotation */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 2rem;
+  perspective: 800px; /* makes 3D rotation visible */
+  transition: transform 0.35s var(--transition-smooth);
+  filter: drop-shadow(0 0 10px var(--accent-glow));
+}
+
+.logo-wrapper:hover {
+  transform: scale(1.03);
+}
+
+.dashboard-logo {
+  opacity: 0.95;
+}
+
+/* =========================================================
+   Navigation
+========================================================= */
+.sidebar-nav {
+  flex: 1;
+  padding: 0 1rem 1rem;
+  overflow-y: auto;
+  scrollbar-width: none;
+  z-index: 2;
+}
+
+.sidebar-nav::-webkit-scrollbar {
+  display: none;
+}
+
+.nav-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.65rem;
+}
+
+.nav-item {
+  display: block;
+}
+
+.nav-item strong {
+  font-weight: 600;
+}
+
+/* =========================================================
+   Links (LIGHT)
+========================================================= */
+.nav-link {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 0.95rem;
+  padding: 0.95rem 1.15rem;
+  border-radius: 1.05rem;
+  cursor: pointer;
+  text-decoration: none;
+
+  color: var(--text-main);
+  background: transparent;
+  border: 1px solid transparent;
+
+  transition: all 0.25s var(--transition-smooth);
+  will-change: transform, background;
+}
+
+.nav-link:hover {
+  background: var(--nav-hover-bg);
+  color: var(--text-bright);
+  border-color: rgb(15 23 42 / 10%);
+  transform: translateX(5px);
+}
+
+.nav-link.active {
+  background: var(--nav-active-bg);
+  color: var(--text-bright);
+  border-color: rgb(14 165 233 / 25%);
+  box-shadow:
+    0 10px 22px rgb(15 23 42 / 10%),
+    inset 0 0 0 1px rgb(14 165 233 / 8%);
+}
+
+.nav-link:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 3px rgb(14 165 233 / 25%);
+}
+
+/* =========================================================
+   Icon Wrapper (LIGHT)
+========================================================= */
+.nav-icon-wrapper {
+  width: 2.05rem;
+  height: 2.05rem;
+  border-radius: 0.9rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  background: rgb(15 23 42 / 3%);
+  border: 1px solid rgb(15 23 42 / 7%);
+
+  transition: all 0.25s var(--transition-smooth);
+}
+
+.nav-icon {
+  font-size: 1.05rem;
+  color: currentcolor;
+}
+
+.nav-link:hover .nav-icon-wrapper {
+  transform: scale(1.05);
+}
+
+.nav-link.active .nav-icon-wrapper {
+  border-color: rgb(14 165 233 / 25%);
+  filter: drop-shadow(0 0 10px var(--accent-glow));
+}
+
+/* =========================================================
+   Nav Label
+========================================================= */
+.nav-label {
+  font-size: 1.05rem;
+  font-weight: 650;
+  letter-spacing: 0.01em;
+  line-height: 1;
+}
+
+/* =========================================================
+   Indicator
+========================================================= */
+.nav-indicator {
+  position: absolute;
+  left: 0.55rem;
+  width: 4px;
+  height: 18px;
+  border-radius: 999px;
+
+  background: linear-gradient(
+    180deg,
+    var(--accent-primary),
+    var(--accent-secondary)
+  );
+
+  transform: scaleY(0);
+  transition: transform 0.3s var(--transition-smooth);
+  box-shadow: 0 0 12px var(--accent-glow);
+}
+
+.nav-link.active .nav-indicator {
+  transform: scaleY(1);
+}
+
+/* =========================================================
+   Footer (LIGHT)
+========================================================= */
+.sidebar-footer {
+  padding: 1.1rem 1rem 1.4rem;
+  margin-top: auto;
+  background: rgb(15 23 42 / 2%);
+  border-top: 1px solid rgb(15 23 42 / 6%);
+  z-index: 2;
+}
+
+.user-card {
+  display: flex;
+  align-items: center;
+  gap: 0.9rem;
+  padding: 0.85rem;
+  border-radius: 1.05rem;
+
+  background: rgb(15 23 42 / 3%);
+  border: 1px solid rgb(15 23 42 / 8%);
+  margin-bottom: 0.85rem;
+}
+
+.user-avatar-wrapper {
+  position: relative;
+  width: 2.8rem;
+  height: 2.8rem;
+}
+
+.user-avatar {
+  width: 2.8rem;
+  height: 2.8rem;
+  border-radius: 0.95rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  background: linear-gradient(
+    135deg,
+    rgb(14 165 233 / 14%),
+    rgb(20 184 166 / 10%)
+  );
+
+  border: 1px solid rgb(15 23 42 / 8%);
+  color: var(--text-bright);
+}
+
+.user-status {
+  position: absolute;
+  bottom: -2px;
+  right: -2px;
+  width: 10px;
+  height: 10px;
+  background: #10b981;
+  border: 2px solid rgb(248 250 252 / 95%);
+  border-radius: 50%;
+  box-shadow: 0 0 10px rgb(16 185 129 / 45%);
+}
+
+.user-info {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+}
+
+.user-name {
+  font-size: 0.95rem;
+  font-weight: 750;
+  color: var(--text-bright);
+}
+
+.user-role {
+  font-size: 0.72rem;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+/* =========================================================
+   Logout Button (LIGHT)
+========================================================= */
+.logout-button {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.95rem 1rem;
+  border-radius: 1.05rem;
+
+  border: 1px solid rgb(15 23 42 / 8%);
+  background: rgb(15 23 42 / 2%);
+  color: var(--text-muted);
+
+  cursor: pointer;
+  transition: all 0.25s var(--transition-smooth);
+}
+
+.logout-icon i {
+  font-size: 1.05rem;
+}
+
+.logout-text {
+  font-size: 1rem;
+  font-weight: 650;
+}
+
+.logout-button:hover {
+  background: rgb(239 68 68 / 10%);
+  color: #b91c1c;
+  border-color: rgb(239 68 68 / 18%);
+}
+
+/* =========================================================
+   Animations
+========================================================= */
+@keyframes floatUp {
+  0% {
+    transform: translateY(0) rotate(0deg) scale(0.55);
+    opacity: 0;
+  }
+  10% { opacity: 1; }
+  90% { opacity: 1; }
+
+  100% {
+    transform: translateY(-110vh) rotate(360deg) scale(1.25);
+    opacity: 0;
+  }
+}

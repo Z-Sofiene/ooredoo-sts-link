@@ -1,0 +1,97 @@
+<div class="access-denied-body">
+  <!-- Floating Forbidden Icons -->
+  <div class="forbidden-icons">
+    <div class="forbidden-icon">⛔</div>
+    <div class="forbidden-icon">🚫</div>
+    <div class="forbidden-icon">⛔</div>
+    <div class="forbidden-icon">🚫</div>
+    <div class="forbidden-icon">⛔</div>
+  </div>
+
+  <div class="denied-container">
+    <!-- Left Side: Error Information -->
+    <div class="error-info-side">
+      <!-- Error Number -->
+      <div class="error-number">403</div>
+
+      <!-- Error Icon -->
+      <div class="error-icon">
+        <div class="error-circle"></div>
+        <div class="error-symbol">⛔</div>
+      </div>
+
+      <!-- Titles -->
+      <h1 class="denied-title">Access Denied</h1>
+      <p class="denied-subtitle">
+        You don't have permission to access this resource
+      </p>
+    </div>
+
+    <!-- Right Side: Messages -->
+    <div class="messages-side">
+      <!-- Message Box -->
+      <div class="message-box">
+        <div class="message-title">
+          <span>⚠️</span> Restricted Access
+        </div>
+        <p class="message-content">
+          This area is restricted to authorized personnel only. The system has detected that your current credentials or role do not grant you access to this page.
+        </p>
+      </div>
+
+      <!-- Possible Reasons -->
+      <div class="message-box">
+        <div class="message-title">
+          <span>🔍</span> Possible Reasons
+        </div>
+        <ul class="reasons-list">
+          <li>Your session may have expired</li>
+          <li>You don't have the required permissions</li>
+          <li>You're trying to access an administrator-only area</li>
+          <li>Your account needs verification</li>
+          <li>Access restrictions have been recently updated</li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- Bottom Section: Actions and Footer -->
+    <div class="bottom-section">
+      <!-- Action Buttons -->
+      <div class="actions">
+        <button class="btn btn-primary" routerLink="/login">
+          <span class="btn-icon">←</span>
+          Return to Login
+        </button>
+
+        <button class="btn btn-secondary" routerLink="/">
+          <span class="btn-icon">🏠</span>
+          Go to Homepage
+        </button>
+
+        <button class="btn btn-secondary" (click)="goBack()">
+          <span class="btn-icon">↶</span>
+          Go Back
+        </button>
+
+        <a class="btn btn-secondary" href="mailto:fibre.stsgroupe@gmail.com">
+          <span class="btn-icon">✉️</span>
+          Contact Support
+        </a>
+      </div>
+
+      <!-- Contact Information -->
+      <div class="contact-info">
+        <p>
+          If you believe this is an error, please contact your system administrator or
+          <a href="mailto:fibre.stsgroupe@gmail.com" class="contact-link">fibre.stsgroupe&#64;gmail.com</a>
+        </p>
+        <p>Reference ID: {{ errorCode || 'ERR-403-' + generateCode() }}</p>
+      </div>
+
+      <!-- Footer -->
+      <div class="denied-footer">
+        <p>STSGroupe Security System • Unauthorized access attempt logged</p>
+      </div>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,350 @@
+<!-- MAIN MODAL -->
+<div class="fixed inset-0 bg-black/50 flex items-center justify-center z-50 backdrop-blur-sm">
+  <!-- Modal Card - wider to accommodate 2 columns -->
+  <div class="bg-white rounded-2xl shadow-2xl w-full max-w-3xl p-6 relative">
+    <!-- Close button -->
+    <button
+      type="button"
+      (click)="cancel()"
+      class="absolute -top-3 -right-3 w-8 h-8 bg-white rounded-full shadow-lg flex items-center justify-center text-gray-500 hover:text-gray-700 hover:bg-gray-50 transition-colors z-10"
+      aria-label="Fermer"
+    >
+      <i class="fas fa-times"></i>
+    </button>
+
+    <!-- Modal Header -->
+    <div class="text-center mb-8">
+      <div
+        class="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-r from-blue-500 to-blue-600 rounded-full mb-4"
+      >
+        <i class="fas fa-box text-2xl text-white"></i>
+      </div>
+
+      <h3 class="text-2xl font-bold text-gray-800">
+        {{ isUpdateMode ? 'Modifier Article' : 'Nouveau Article' }}
+      </h3>
+
+      <p class="text-gray-500 mt-2">
+        {{ isUpdateMode ? 'Modifiez les informations de l\'article' : 'Remplissez les informations de l\'article' }}
+      </p>
+    </div>
+
+    <!-- Form with grid layout for 2 columns -->
+    <form class="space-y-6" (ngSubmit)="addProduit()">
+
+      <!-- 2-COLUMN GRID LAYOUT -->
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+
+        <!-- SOURCE (Disabled in update mode) -->
+        <div class="space-y-2">
+          <div class="flex items-center justify-between">
+            <label
+              for="source"
+              class="text-sm font-semibold text-gray-700 flex items-center gap-2"
+            >
+              <i class="fas fa-database text-blue-500"></i>
+              Source Article <span class="text-red-500">*</span>
+            </label>
+          </div>
+
+          <div class="relative">
+            <select
+              id="operateurId"
+              [(ngModel)]="produit.operateurId"
+              name="operateurId"
+              [disabled]="isUpdateMode"
+              class="w-full border-2 border-gray-200 text-black rounded-xl px-4 py-3 pl-12 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 outline-none transition-colors appearance-none bg-white hover:border-gray-300"
+              [class.bg-gray-100]="isUpdateMode"
+              required
+            >
+              <option [ngValue]="0" disabled>
+                Sélectionner une source
+              </option>
+
+              <option *ngFor="let source of sourcesProduit" [ngValue]="source.id">
+                {{ source.nomOperateur }}
+              </option>
+            </select>
+
+            <div class="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none">
+              <i class="fas fa-building"></i>
+            </div>
+
+            <div class="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none">
+              <i class="fas fa-chevron-down"></i>
+            </div>
+          </div>
+        </div>
+
+        <!-- Type Article -->
+        <div class="space-y-2">
+          <div class="flex items-center justify-between">
+            <label
+              for="type"
+              class="text-sm font-semibold text-gray-700 flex items-center gap-2"
+            >
+              <i class="fas fa-database text-blue-500"></i>
+              Type Article <span class="text-red-500">*</span>
+            </label>
+          </div>
+
+          <div class="relative">
+            <select
+              id="typeArticleId"
+              [(ngModel)]="produit.typeArticleId"
+              name="typeArticleId"
+              class="w-full border-2 border-gray-200 text-black rounded-xl px-4 py-3 pl-12 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 outline-none transition-colors appearance-none bg-white hover:border-gray-300"
+              required
+            >
+              <option [ngValue]="0" disabled>
+                Sélectionner une type
+              </option>
+
+              <option *ngFor="let type of typeArticles" [ngValue]="type.id">
+                {{ type.typeArticle }}
+              </option>
+            </select>
+
+            <div class="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none">
+              <i class="fas fa-building"></i>
+            </div>
+
+            <div class="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none">
+              <i class="fas fa-chevron-down"></i>
+            </div>
+          </div>
+        </div>
+
+
+
+
+        <!-- ARTICLE NAME - Full width on mobile, but in grid it will span? Let's make it span both columns for better UX -->
+        <div class="md:col-span-2 space-y-2">
+          <label
+            for="nomArticle"
+            class="text-sm font-semibold text-gray-700 flex items-center gap-2"
+          >
+            <i class="fas fa-heading text-orange-500"></i>
+            Article <span class="text-red-500">*</span>
+          </label>
+
+          <div class="relative">
+            <textarea
+              type="text"
+              id="nomArticle"
+              [(ngModel)]="produit.nomArticle"
+              name="nomArticle"
+              placeholder="Ex: Article"
+              rows="2"
+              class="w-full border-2 border-gray-200 text-black rounded-xl px-4 py-3 pl-12 focus:border-orange-500 focus:ring-2 focus:ring-orange-200 outline-none transition-colors hover:border-gray-300"
+            ></textarea>
+
+          </div>
+        </div>
+
+
+        <div class="space-y-2">
+          <label
+            for="code"
+            class="text-sm font-semibold text-gray-700 flex items-center gap-2"
+          >
+            <i class="fas fa-ruler text-orange-500"></i>
+            Code Article <span class="text-red-500">*</span>
+          </label>
+
+          <div class="relative">
+            <input
+              type="text"
+              id="code"
+              [(ngModel)]="produit.code"
+              name="code"
+              placeholder="SERV_001, SERV_002 ..."
+              class="w-full border-2 border-gray-200 text-black rounded-xl px-4 py-3 pl-12 focus:border-orange-500 focus:ring-2 focus:ring-orange-200 outline-none transition-colors hover:border-gray-300"
+            />
+
+          </div>
+        </div>
+
+        <!-- Unité de mesure -->
+        <div class="space-y-2">
+          <label
+            for="unite"
+            class="text-sm font-semibold text-gray-700 flex items-center gap-2"
+          >
+            <i class="fas fa-ruler text-orange-500"></i>
+            Unité de mesure <span class="text-red-500">*</span>
+          </label>
+
+          <div class="relative">
+            <input
+              type="text"
+              id="unite"
+              [(ngModel)]="produit.unite"
+              name="unite"
+              placeholder="Ex: metre, m³, Kg ..."
+              class="w-full border-2 border-gray-200 text-black rounded-xl px-4 py-3 pl-12 focus:border-orange-500 focus:ring-2 focus:ring-orange-200 outline-none transition-colors hover:border-gray-300"
+            />
+
+          </div>
+        </div>
+
+
+        <!-- Article STS SWITCH -->
+        <div class="space-y-2">
+          <label
+            class="text-sm font-semibold text-gray-700 flex items-center gap-2"
+          >
+            <i class="fas fa-toggle-on text-green-500"></i>
+            Article SotelSud
+          </label>
+
+          <div
+            class="flex items-center justify-between border-2 border-gray-200 rounded-xl px-4 py-3 bg-white"
+          >
+            <div class="flex flex-col">
+            <span class="text-sm font-medium text-gray-700">
+              {{ produit.articleSTS ? 'Oui' : 'Non' }}
+            </span>
+                    <span class="text-xs text-gray-400">
+              Activer si l'article par SotelSud
+            </span>
+            </div>
+
+            <button
+              type="button"
+              (click)="produit.articleSTS = !produit.articleSTS"
+              class="relative inline-flex h-6 w-11 items-center rounded-full transition-colors duration-200 focus:outline-none"
+              [class.bg-green-600]="produit.articleSTS"
+              [class.bg-gray-300]="!produit.articleSTS"
+            >
+            <span
+              class="inline-block h-4 w-4 transform rounded-full bg-white transition-transform duration-200"
+              [class.translate-x-6]="produit.articleSTS"
+              [class.translate-x-1]="!produit.articleSTS"
+            ></span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Empty div for spacing if needed, or we can add another field here -->
+        <div class="space-y-2">
+          <!-- This space intentionally left for future field or to maintain grid balance -->
+        </div>
+      </div>
+
+      <!-- SWITCH BUTTON FOR OPTIONAL FIELDS (Only show in add mode or if already has optional fields) -->
+      <div *ngIf="!isUpdateMode" class="flex items-center justify-between p-3 bg-gray-50 rounded-xl border border-gray-200">
+        <div class="flex items-center gap-2">
+          <i class="fas fa-toggle-on text-gray-500"></i>
+          <span class="text-sm font-medium text-gray-700">Ajouter des détails optionnels</span>
+        </div>
+        <button
+          type="button"
+          (click)="toggleOptionalFields()"
+          class="relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+          [class.bg-blue-600]="showOptionalFields"
+          [class.bg-gray-300]="!showOptionalFields"
+        >
+          <span
+            class="inline-block h-4 w-4 transform rounded-full bg-white transition-transform"
+            [class.translate-x-6]="showOptionalFields"
+            [class.translate-x-1]="!showOptionalFields"
+          ></span>
+        </button>
+      </div>
+
+      <!-- OPTIONAL FIELDS (TITRE & PRIX) in 2-column layout -->
+      <div *ngIf="showOptionalFields || (isUpdateMode && (produit.titre || produit.quantite > 0))" class="space-y-4 animate-fadeIn">
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <!-- TITRE -->
+          <div class="space-y-2">
+            <label
+              for="titre"
+              class="text-sm font-semibold text-gray-700 flex items-center gap-2"
+            >
+              <i class="fas fa-tag text-purple-500"></i>
+              Titre du produit
+              <span class="text-xs text-gray-400 font-normal">(Optionnel)</span>
+            </label>
+
+            <div class="relative">
+              <input
+                type="text"
+                id="titre"
+                [(ngModel)]="produit.titre"
+                name="titre"
+                placeholder="Ex: FO 12, Prise ATB ..."
+                class="w-full border-2 border-gray-200 text-black rounded-xl px-4 py-3 pl-12 focus:border-purple-500 focus:ring-2 focus:ring-purple-200 outline-none transition-colors hover:border-gray-300"
+              />
+
+            </div>
+          </div>
+
+          <!-- Quantite -->
+          <div class="space-y-2">
+            <label
+              for="quantite"
+              class="text-sm font-semibold text-gray-700 flex items-center gap-2"
+            >
+              <i class="fas fa-boxes text-cyan-500"></i>
+              Quantité <span class="text-red-500">*</span>
+            </label>
+
+            <div class="relative">
+              <input
+                type="number"
+                id="quantite"
+                [(ngModel)]="produit.quantite"
+                name="quantite"
+                placeholder="0"
+                min="0"
+                class="w-full border-2 border-gray-200 text-black rounded-xl px-4 py-3 pl-12 focus:border-cyan-500 focus:ring-2 focus:ring-cyan-200 outline-none transition-colors hover:border-gray-300"
+              />
+
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- SUBMIT -->
+      <div class="flex gap-3 pt-6 border-t border-gray-100">
+        <button
+          type="button"
+          (click)="cancel()"
+          class="cancel-btn"
+        >
+          <i class="fas fa-times"></i>
+          Annuler
+        </button>
+
+        <button
+          type="submit"
+          [disabled]="!isFormValid()"
+          [class.submit-btn]="isFormValid()"
+          class="flex-1 py-3 px-4 rounded-xl font-semibold transition-all duration-200 flex items-center justify-center gap-2"
+          [class.bg-gradient-to-r]="isFormValid()"
+          [class.from-blue-500]="isFormValid()"
+          [class.to-blue-600]="isFormValid()"
+          [class.text-white]="isFormValid()"
+          [class.bg-gray-300]="!isFormValid()"
+          [class.text-gray-500]="!isFormValid()"
+          [class.cursor-not-allowed]="!isFormValid()"
+        >
+          <i class="fas fa-check-circle"></i>
+          {{ isUpdateMode ? 'Mettre à jour' : 'Ajouter l\'Article' }}
+        </button>
+      </div>
+    </form>
+
+    <!-- Validation hint -->
+    <div
+      *ngIf="!isFormValid() && !isUpdateMode"
+      class="mt-4 p-3 bg-red-50 border border-red-100 rounded-lg"
+    >
+      <p class="text-sm text-red-600 flex items-center gap-2">
+        <i class="fas fa-exclamation-circle"></i>
+        Les champs marqués d'un <span class="text-red-500">*</span> sont obligatoires
+      </p>
+    </div>
+  </div>
+</div>

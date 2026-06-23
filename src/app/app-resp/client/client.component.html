@@ -1,0 +1,514 @@
+<div class="modal-overlay" (click)="close.emit()">
+  <div class="modal-container" [class]="getThemeClass()" (click)="$event.stopPropagation()">
+
+    <!-- Modal Header -->
+    <div class="modal-header">
+      <div class="header-content">
+        <h2 class="modal-title">
+          <i class="fas fa-user-shield operator-icon"></i> Liste des Clients
+        </h2>
+        <div class="operator-badge" *ngIf="operateur">
+          {{ operateur.nomOperateur }}
+        </div>
+      </div>
+      <button class="close-button" (click)="close.emit()" aria-label="Fermer">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+        </svg>
+      </button>
+    </div>
+
+    <!-- Context Information Section -->
+    <div class="context-section">
+      <div class="context-grid">
+        <div class="context-item">
+          <span class="context-label">Opérateur</span>
+          <span class="context-value operator-value" [title]="operateur?.nomOperateur || 'Non spécifié'">
+            {{ operateur?.nomOperateur || 'Non spécifié' }}
+          </span>
+        </div>
+        <div class="context-item">
+          <span class="context-label">Projet</span>
+          <span class="context-value" [title]="projet?.nomProjet || 'Non spécifié'">
+            {{ projet?.nomProjet || 'Non spécifié' }}
+          </span>
+        </div>
+        <div class="context-item" *ngIf="zone && param !== 'projet'">
+          <span class="context-label">Zone</span>
+          <span class="context-value" [title]="zone.label">
+            {{ zone.label }}
+          </span>
+        </div>
+        <div class="context-item" *ngIf="sousZone">
+          <span class="context-label">Sous-Zone</span>
+          <span class="context-value" [title]="sousZone.label">
+            {{ sousZone.label }}
+          </span>
+        </div>
+        <div class="context-item" *ngIf="cite">
+          <span class="context-label">Cité</span>
+          <span class="context-value" [title]="cite.nomCite">
+            {{ cite.nomCite }}
+          </span>
+        </div>
+      </div>
+    </div>
+
+    <!-- ETAT Filter Buttons -->
+    <div class="etat-filter-section">
+      <div class="etat-buttons">
+        <button
+          class="etat-filter-btn"
+          [class.active]="selectedEtat === 'all'"
+          (click)="filterByEtat('all')">
+          <i class="fas fa-list"></i>
+          Tous
+          <span class="count-badge">{{ getEtatCount('all') }}</span>
+        </button>
+        <button
+          class="etat-filter-btn"
+          [class.active]="selectedEtat === 'Non affecté'"
+          (click)="filterByEtat('Non affecté')">
+          <i class="fas fa-ban"></i>
+          Non affecté
+          <span class="count-badge">{{ getEtatCount('Non affecté') }}</span>
+        </button>
+        <button
+          class="etat-filter-btn"
+          [class.active]="selectedEtat === 'En attente'"
+          (click)="filterByEtat('En attente')">
+          <i class="fas fa-clock"></i>
+          En attente
+          <span class="count-badge">{{ getEtatCount('En attente') }}</span>
+        </button>
+        <button
+          class="etat-filter-btn"
+          [class.active]="selectedEtat === 'En cours'"
+          (click)="filterByEtat('En cours')">
+          <i class="fas fa-spinner"></i>
+          En cours
+          <span class="count-badge">{{ getEtatCount('En cours') }}</span>
+        </button>
+        <button
+          class="etat-filter-btn"
+          [class.active]="selectedEtat === 'Terminé'"
+          (click)="filterByEtat('Terminé')">
+          <i class="fas fa-check-circle"></i>
+          Terminé
+          <span class="count-badge">{{ getEtatCount('Terminé') }}</span>
+        </button>
+        <button
+          class="etat-filter-btn"
+          [class.active]="selectedEtat === 'Annulé'"
+          (click)="filterByEtat('Annulé')">
+          <i class="fas fa-times-circle"></i>
+          Annulé
+          <span class="count-badge">{{ getEtatCount('Annulé') }}</span>
+        </button>
+        <button
+          class="etat-filter-btn"
+          [class.active]="selectedEtat === 'Non fibré'"
+          (click)="filterByEtat('Non fibré')">
+          <i class="fas fa-times-circle"></i>
+          Non fibré
+          <span class="count-badge">{{ getEtatCount('Non fibré') }}</span>
+        </button>
+        <button
+          class="etat-filter-btn"
+          [class.active]="selectedEtat === 'Non disponible'"
+          (click)="filterByEtat('Non disponible')">
+          <i class="fas fa-times-circle"></i>
+          Non disponible
+          <span class="count-badge">{{ getEtatCount('Non disponible') }}</span>
+        </button>
+        <button
+          class="etat-filter-btn"
+          [class.active]="selectedEtat === 'RDV raté'"
+          (click)="filterByEtat('RDV raté')">
+          <i class="fas fa-times-circle"></i>
+          RDV raté
+          <span class="count-badge">{{ getEtatCount('RDV raté') }}</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- Table Section -->
+    <div class="table-section">
+      <div class="table-card">
+        <div class="filter-bar">
+
+          <div class="search-box">
+            <i class="fa fa-search search-icon"></i>
+            <input
+              [(ngModel)]="searchTerm"
+              placeholder="Rechercher un client..."
+              class="search-input"
+              type="text"
+            />
+          </div>
+
+          <!-- Sous zone dropdown -->
+          <div *ngIf="!sousZone && sousZones.length > 0">
+            <select
+              id="clientSousZone"
+              class="form-control"
+              [(ngModel)]="selectedSousZone"
+              (ngModelChange)="onSousZoneChange()"
+            >
+              <option [ngValue]="null">-- Choisir une sous zone --</option>
+              <option *ngFor="let sz of sousZones" [ngValue]="sz">
+                {{ sz.label }} ({{ sz.clientsCount }})
+              </option>
+            </select>
+          </div>
+
+          <!-- Cite dropdown -->
+          <div *ngIf="!cite && selectedSousZone && selectedSousZone.cites?.length">
+            <select
+              id="clientCite"
+              class="form-control"
+              [(ngModel)]="selectedCite"
+              (ngModelChange)="onCiteChange()"
+            >
+              <option [ngValue]="null">-- Choisir une cité --</option>
+              <option *ngFor="let c of selectedSousZone.cites" [ngValue]="c">
+                {{ c.nomCite }} ({{ c.clientsCount }})
+              </option>
+            </select>
+          </div>
+
+          <!-- SWITCH VIEW -->
+          <div class="view-switch">
+            <button
+              class="switch-btn"
+              [class.active]="viewMode === 'clients'"
+              (click)="viewMode='clients'">
+              <i class="fa fa-users"></i>
+              Clients
+            </button>
+
+            <button
+              class="switch-btn"
+              [class.active]="viewMode === 'raccordements'"
+              (click)="viewMode='raccordements'">
+              <i class="fa fa-network-wired"></i>
+              Raccordements
+            </button>
+          </div>
+
+          <!-- Multi-assign Button -->
+          <button
+            class="btn-multi-assign"
+            (click)="openMultiAssignModal()"
+            [class.has-selection]="multiAssignData.selectedClients.size > 0">
+            <i class="fas fa-users"></i>
+            Affecter ({{ multiAssignData.selectedClients.size }})
+          </button>
+
+        </div>
+
+        <div class="table-wrapper">
+          <table class="modern-table">
+            <thead>
+            <tr *ngIf="viewMode === 'clients'">
+              <th style="width: 40px;">
+                <input
+                  type="checkbox"
+                  (change)="toggleAllClients($event)"
+                  [checked]="isAllSelected()"
+                  [indeterminate]="isSomeSelected()">
+              </th>
+              <th><i class="fa fa-tag"></i> Réf / Cas CRM</th>
+              <th><i class="fa fa-user"></i> Client</th>
+              <th><i class="fas fa-mobile-alt"></i> Contact</th>
+              <th><i class="fas fa-mobile"></i> MSISDN</th>
+              <th (click)="toggleSort('dateRDV')" style="cursor: pointer;">
+                <i class="fa fa-clock"></i> Date RDV
+                <i class="fa"
+                   [class.fa-sort]="sortField !== 'dateRDV'"
+                   [class.fa-sort-up]="sortField === 'dateRDV' && sortDirection === 'asc'"
+                   [class.fa-sort-down]="sortField === 'dateRDV' && sortDirection === 'desc'">
+                </i>
+              </th>
+              <th><i class="fas fa-home"></i> Adresse</th>
+              <th class="text-center"><i class="fa fa-cog"></i> Actions</th>
+            </tr>
+
+            <tr *ngIf="viewMode === 'raccordements'">
+              <th><i class="fa fa-tag"></i> Réf / Cas CRM</th>
+              <th><i class="fa fa-file-alt"></i> SLA</th>
+              <th><i class="fa fa-align-left"></i> Description</th>
+              <th><i class="fa fa-user-tie"></i> Responsable</th>
+              <th><i class="fa fa-users-cog"></i> Chef Équipe</th>
+              <th><i class="fa fa-signal"></i> Débit</th>
+              <th><i class="fa fa-network-wired"></i> Type</th>
+              <th class="text-center"><i class="fa fa-cog"></i> Actions</th>
+            </tr>
+            </thead>
+            <tbody>
+            <!-- CLIENTS -->
+            <ng-container *ngIf="viewMode === 'clients'">
+              <tr *ngFor="let client of paginatedClients; trackBy: trackByClientId" class="table-row">
+                <td>
+                  <input
+                    type="checkbox"
+                    [checked]="isClientSelected(client)"
+                    (change)="toggleClientSelection(client, $event)">
+                </td>
+                <td class="label-cell"><div class="label-badge">{{ client.label }}</div></td>
+                <td class="description-cell">{{ client.nom }} {{ client.prenom }}</td>
+                <td>{{ client.numTelephone }}</td>
+                <td>{{ client.msisdn }}</td>
+                <td>{{ client.dateRDV }} à {{ client.heureRDV }}</td>
+                <td>{{ client.adresse }}</td>
+                <td class="actions-cell">
+                  <button *ngIf="client.responsable"
+                          class="btn-action btn-view"
+                          (click)="toggleTacheModal(client.id)"
+                          title="voir les détails du raccordement">
+                    <i class="fa fa-eye"></i>
+                  </button>
+                  <button *ngIf="!client.responsable"
+                          class="btn-action submit-btn"
+                          (click)="toggleAddRaccordementModal(client)"
+                          title="Ajouter raccordement">
+                    <i class="fa fa-plus"></i><i class="fa fa-network-wired"></i>
+                  </button>
+                  <button class="btn-action btn-delete" (click)="deleteClient(client.id)" title="Supprimer">
+                    <i class="fa fa-trash"></i>
+                  </button>
+                </td>
+              </tr>
+            </ng-container>
+
+            <!-- RACCORDEMENTS -->
+            <ng-container *ngIf="viewMode === 'raccordements'">
+              <tr *ngFor="let client of paginatedClients" class="table-row">
+                <td class="label-cell"><div class="label-badge">{{ client.label }}</div></td>
+                <td>{{ client.sla }}</td>
+                <td>{{ client.description }}</td>
+                <td>{{ client.responsable }}</td>
+                <td>{{ client.chefEquipe }}</td>
+                <td>{{ client.debit }}</td>
+                <td>{{ client.typeRaccordement }}</td>
+                <td class="actions-cell">
+                  <button *ngIf="client.responsable"
+                          class="btn-action btn-view"
+                          (click)="toggleTacheModal(client.id)"
+                          title="voir les détails du raccordement">
+                    <i class="fa fa-eye"></i>
+                  </button>
+                  <button *ngIf="!client.responsable"
+                          class="btn-action submit-btn"
+                          (click)="toggleAddRaccordementModal(client)">
+                    <i class="fa fa-plus"></i>
+                  </button>
+                  <button class="btn-action btn-delete" (click)="deleteClient(client.id)">
+                    <i class="fa fa-trash"></i>
+                  </button>
+                </td>
+              </tr>
+            </ng-container>
+
+            <!-- EMPTY STATE -->
+            <tr *ngIf="paginatedClients.length === 0">
+              <td [attr.colspan]="viewMode === 'clients' && !sousZone && !selectedSousZone ? 9 : viewMode === 'clients' ? 8 : 10"
+                  class="text-center py-8 text-gray-500">
+                <i class="fa fa-users fa-2x mb-4"></i>
+                <p>Aucun {{ viewMode === 'clients' ? 'client' : 'raccordement' }} trouvé</p>
+              </td>
+            </tr>
+            </tbody>
+          </table>
+
+          <div class="pagination" *ngIf="totalPages > 1">
+            <button
+              (click)="goToPage(currentPage - 1)"
+              [disabled]="currentPage === 1">
+              <i class="fas fa-chevron-left"></i> Précédent
+            </button>
+
+            <span class="pagination-info">
+              Page {{ currentPage }} / {{ totalPages }}
+            </span>
+
+            <button
+              (click)="goToPage(currentPage + 1)"
+              [disabled]="currentPage === totalPages">
+              Suivant <i class="fas fa-chevron-right"></i>
+            </button>
+          </div>
+
+        </div>
+      </div>
+    </div>
+
+    <!-- BOTTOM MODAL SECTIONS - Appear under the table instead of as overlays -->
+
+    <!-- Multi Assign Modal Section -->
+    <div *ngIf="showMultiAssignModal" class="bottom-modal-section">
+      <div class="bottom-modal-container" [class]="getThemeClass()">
+        <div class="bottom-modal-header">
+          <h3 class="bottom-modal-title">
+            <i class="fas fa-users"></i> Affecter des clients à une équipe
+          </h3>
+          <button class="bottom-modal-close" (click)="closeMultiAssignModal()">✕</button>
+        </div>
+        <div class="bottom-modal-body">
+          <div class="form-group">
+            <div class="form-row">
+              <div class="form-field">
+                <label>Chef d'équipe</label>
+                <select class="form-control" [(ngModel)]="multiAssignData.selectedChefEquipe">
+                  <option value="">-- Sélectionner un chef d'équipe --</option>
+                  <option *ngFor="let chef of chefs_equipes" [value]="chef.email">
+                    {{ chef.prenom }} {{ chef.nom }}
+                  </option>
+                </select>
+              </div>
+
+              <div class="form-field">
+                <label>Etat du Raccordement</label>
+                <select class="form-control" [(ngModel)]="multiAssignData.selectedEtatRaccordement">
+                  <option [ngValue]="null">-- Sélectionner une etat --</option>
+                  <option *ngFor="let etatRaccordement of etatsRaccordement" [ngValue]="etatRaccordement">
+                    {{ etatRaccordement.etat }}
+                  </option>
+                </select>
+              </div>
+
+              <div class="form-field">
+                <div class="label-with-button">
+                  <label>Type de raccordement</label>
+                  <button class="btn-add-type-icon" (click)="showTypeModal = true; showMultiAssignModal = false" title="Ajouter un type">
+                    <i class="fas fa-plus"></i>
+                  </button>
+
+                  <button class="btn-manage-types" (click)="showDeleteTypesModal = true; showTypeModal = false">
+                    <i class="fas fa-trash"></i>
+                  </button>
+                </div>
+                <select class="form-control" [(ngModel)]="multiAssignData.selectedType">
+                  <option [ngValue]="null">-- Sélectionner un type --</option>
+                  <option *ngFor="let type of typesRaccordement" [ngValue]="type">
+                    {{ type.type }}
+                  </option>
+                </select>
+              </div>
+            </div>
+          </div>
+
+          <div class="selected-clients-info">
+            <h4 class="selected-clients-title">
+              Clients sélectionnés ({{ multiAssignData.selectedClients.size }})
+            </h4>
+            <div class="selected-clients-list">
+              <div *ngFor="let client of multiAssignData.selectedClients" class="selected-client-tag">
+                {{ client.label }} - {{ client.nom }} {{ client.prenom }}
+              </div>
+              <div *ngIf="multiAssignData.selectedClients.size === 0" class="no-clients-message">
+                Aucun client sélectionné
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="bottom-modal-footer">
+          <button class="btn-cancel" (click)="closeMultiAssignModal()">Annuler</button>
+          <button class="btn-submit" (click)="submitMultiAssign()">
+            <i class="fas fa-check"></i> Affecter
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Add Raccordement Modal Section -->
+    <div *ngIf="showAddRaccordementModal" class="bottom-modal-section">
+      <div class="bottom-modal-container" [class]="getThemeClass()">
+        <div class="bottom-modal-header">
+          <h3 class="bottom-modal-title">
+            <i class="fas fa-plus-circle"></i> Ajouter un raccordement
+          </h3>
+          <button class="bottom-modal-close" (click)="showAddRaccordementModal = false">✕</button>
+        </div>
+        <div class="bottom-modal-body">
+          <app-add-raccordement></app-add-raccordement>
+        </div>
+      </div>
+    </div>
+
+    <!-- Type Modal Section -->
+    <div *ngIf="showTypeModal" class="bottom-modal-section">
+      <div class="bottom-modal-container" [class]="getThemeClass()">
+        <div class="bottom-modal-header">
+          <h3 class="bottom-modal-title">
+            <i class="fas fa-plus-circle"></i> Ajouter un Nouveau Type
+          </h3>
+          <button class="bottom-modal-close" (click)="showTypeModal = false">✕</button>
+        </div>
+        <div class="bottom-modal-body">
+          <form (ngSubmit)="addNewType()" #typeForm="ngForm">
+            <div class="form-group">
+              <label for="newType" class="required">Type Raccordement</label>
+              <input
+                type="text"
+                id="newType"
+                class="form-control"
+                [(ngModel)]="newType.type"
+                name="newType"
+                required
+                placeholder="Ex: FTTH, FTTB, etc.">
+            </div>
+            <div class="form-actions">
+              <button type="button" class="btn-cancel" (click)="showTypeModal = false">Annuler</button>
+              <button type="submit" class="btn-submit">Ajouter Type</button>
+            </div>
+          </form>
+
+        </div>
+      </div>
+    </div>
+
+    <!-- Delete Types Modal Section -->
+    <div *ngIf="showDeleteTypesModal" class="bottom-modal-section">
+      <div class="bottom-modal-container" [class]="getThemeClass()">
+        <div class="bottom-modal-header">
+          <h3 class="bottom-modal-title">
+            <i class="fas fa-trash-alt"></i> Gérer les Types
+          </h3>
+          <button class="bottom-modal-close" (click)="showDeleteTypesModal = false">✕</button>
+        </div>
+        <div class="bottom-modal-body">
+          <div class="types-list">
+            <div *ngFor="let type of filteredTypes" class="type-item">
+              <span>{{ type.type }}</span>
+              <button type="button" class="btn-delete-type" (click)="deleteTypeRaccordement(type, $event)">
+                <i class="fas fa-trash"></i>
+              </button>
+            </div>
+            <div *ngIf="filteredTypes.length === 0" class="no-types-message">
+              Aucun type disponible
+            </div>
+          </div>
+          <div class="form-actions">
+            <button class="btn-cancel" (click)="showDeleteTypesModal = false">Fermer</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- Tache Modal (kept as overlay since it appears to be a different component) -->
+<div *ngIf="showTacheModel">
+  <app-tache
+    [zone]="zone"
+    [sousZone]="sousZone"
+    [cite]="cite"
+    [projet]="projet"
+    [operateur]="operateur"
+    [clientId]="selectedClientId"
+    (close)="showTacheModel = false"
+    (refresh)="loadClients(this.id, this.pathParam)">
+  </app-tache>
+</div>

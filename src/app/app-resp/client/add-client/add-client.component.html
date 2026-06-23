@@ -1,0 +1,349 @@
+<div class="modal-overlay" (click)="close.emit()">
+  <div class="modal-container" [class]="getThemeClass()" (click)="$event.stopPropagation()">
+
+    <!-- Modal Header -->
+    <div class="modal-header">
+      <div class="header-content">
+
+        <div class="operator-badge" *ngIf="operateur">
+          {{ operateur.nomOperateur }}
+        </div>
+
+        <div class="view-switch">
+          <button
+            class="switch-btn"
+            [class.active]="viewMode === 'client'"
+            (click)="viewMode='client'">
+
+            <i class="fa fa-user"></i>
+            Ajouter un client
+          </button>
+
+          <button
+            class="switch-btn"
+            [class.active]="viewMode === 'clients'"
+            (click)="viewMode='clients'">
+
+            <i class="fa fa-users"></i>
+            Ajouter des clients
+          </button>
+        </div>
+
+      </div>
+
+      <button class="close-button" (click)="close.emit()" aria-label="Fermer">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                d="M6 18L18 6M6 6l12 12"/>
+        </svg>
+      </button>
+    </div>
+
+    <!-- Context Information Section -->
+    <div class="context-section">
+      <h3 class="context-title">
+        Ajouter un client à une
+        <span *ngIf="zone && !sousZone">Zone</span>
+        <span *ngIf="zone && sousZone && !cite">Sous-zone</span>
+        <span *ngIf="zone && sousZone && cite">Cité</span>
+      </h3>
+
+      <div class="context-grid">
+        <div class="context-item">
+          <span class="context-label">Opérateur</span>
+          <span class="context-value operator-value">
+            {{ operateur?.nomOperateur || 'Non spécifié' }}
+          </span>
+        </div>
+
+        <div class="context-item">
+          <span class="context-label">Projet</span>
+          <span class="context-value">
+            {{ projet?.nomProjet || 'Non spécifié' }}
+          </span>
+        </div>
+
+        <div class="context-item">
+          <span class="context-label">Zone</span>
+          <span class="context-value">
+            {{ zone?.label || 'Non spécifiée' }}
+          </span>
+        </div>
+
+        <div class="context-item" *ngIf="sousZone">
+          <span class="context-label">Sous-Zone</span>
+          <span class="context-value">
+            {{ sousZone.label }}
+          </span>
+        </div>
+
+        <div class="context-item" *ngIf="cite">
+          <span class="context-label">Cité</span>
+          <span class="context-value">
+            {{ cite.nomCite }}
+          </span>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===================== CLIENT FORM ===================== -->
+    <ng-container *ngIf="viewMode === 'client'">
+
+      <div class="form-section">
+
+        <form class="client-form">
+
+          <!-- Ref + VoIP -->
+          <div class="form-row">
+            <div class="form-group">
+              <label class="form-label">
+                Ref / CRM <span class="required">*</span>
+              </label>
+              <input type="text"
+                     [(ngModel)]="newClient.label"
+                     name="label"
+                     class="form-input-client"
+                     placeholder="Ref CRM">
+            </div>
+
+            <div class="form-group">
+              <label class="form-label">NumVoIP</label>
+              <input type="text"
+                     [(ngModel)]="newClient.numVoip"
+                     name="numVoip"
+                     class="form-input-client">
+            </div>
+          </div>
+
+          <!-- Name + CIN + Email -->
+          <div class="form-row">
+            <div class="form-group">
+              <label class="form-label">Nom *</label>
+              <input type="text"
+                     [(ngModel)]="newClient.nom"
+                     name="nom"
+                     class="form-input-client">
+            </div>
+
+            <div class="form-group">
+              <label class="form-label">CIN</label>
+              <input type="text"
+                     [(ngModel)]="newClient.cin"
+                     name="cin"
+                     class="form-input-client">
+            </div>
+
+            <div class="form-group">
+              <label class="form-label">Email</label>
+              <input type="email"
+                     [(ngModel)]="newClient.email"
+                     name="email"
+                     class="form-input-client">
+            </div>
+          </div>
+
+          <!-- Phones -->
+          <div class="form-row">
+            <div class="form-group">
+              <label class="form-label">Téléphone 1</label>
+              <input type="text"
+                     [(ngModel)]="newClient.numTelephone"
+                     name="numTelephone"
+                     class="form-input-client">
+            </div>
+
+            <div class="form-group">
+              <label class="form-label">Téléphone 2</label>
+              <input type="text"
+                     [(ngModel)]="newClient.numTelephone2"
+                     name="numTelephone2"
+                     class="form-input-client">
+            </div>
+
+            <div class="form-group">
+              <label class="form-label">MSISDN</label>
+              <input type="text"
+                     [(ngModel)]="newClient.msisdn"
+                     name="msisdn"
+                     class="form-input-client">
+            </div>
+          </div>
+
+          <!-- Etat OT -->
+          <div class="form-row">
+            <div class="form-group">
+              <label class="form-label">Etat OT *</label>
+
+              <select class="form-control"
+                      [(ngModel)]="newClient.etat.id"
+                      name="etat">
+
+                <option [ngValue]="0">-- Choisir EtatOT --</option>
+
+                <option *ngFor="let e of etatOTs" [ngValue]="e.id">
+                  {{ e.etatOT }}
+                </option>
+
+              </select>
+            </div>
+          </div>
+
+          <!-- Adresse -->
+          <div class="form-group">
+            <label class="form-label">Adresse</label>
+            <textarea class="form-input-client textarea"
+                      rows="3"
+                      [(ngModel)]="newClient.adresse"
+                      name="adresse">
+            </textarea>
+          </div>
+
+          <!-- Actions -->
+          <div class="form-actions">
+            <button type="button"
+                    class="btn btn-cancel"
+                    (click)="close.emit()">
+              Annuler
+            </button>
+
+            <button type="button"
+                    class="btn btn-submit"
+                    [disabled]="!newClient.nom || !newClient.label"
+                    (click)="addNewClient()">
+              Ajouter le client
+            </button>
+          </div>
+
+        </form>
+
+      </div>
+
+    </ng-container>
+
+    <!-- ===================== EXCEL IMPORT ===================== -->
+    <ng-container *ngIf="viewMode === 'clients'">
+
+      <div class="form-section">
+
+        <!-- Excel controls -->
+        <div class="form-row">
+
+          <div class="form-group">
+            <label class="form-label">Header Row</label>
+            <input type="number"
+                   min="1"
+                   [(ngModel)]="headerRow"
+                   class="form-input-client">
+          </div>
+
+          <div class="form-group">
+            <button class="btn btn-submit"
+                    (click)="fileInput.click()">
+              Import Excel
+            </button>
+
+            <input type="file"
+                   #fileInput
+                   (change)="onFileChange($event)"
+                   accept=".xls,.xlsx"
+                   hidden>
+          </div>
+
+        </div>
+
+        <!-- Send -->
+        <div class="form-actions">
+          <button class="btn btn-submit"
+                  (click)="batchAddClients()"
+                  [disabled]="clients.length === 0">
+            Enregistrer
+          </button>
+        </div>
+
+        <!-- ================= TABLE ================= -->
+        <div class="table-container" *ngIf="clients.length > 0">
+
+          <table class="clients-table">
+
+            <thead>
+            <tr>
+              <!-- Tunisie Telecom -->
+              <ng-container *ngIf="operateur?.nomOperateur?.toLowerCase()?.includes('tunisie telecom')">
+                <th>Ref</th>
+                <th>Nom</th>
+                <th>Tel 1</th>
+                <th>Tel 2</th>
+                <th>Email</th>
+                <th>VoIP</th>
+                <th>Etat OT</th>
+                <th>Date OT</th>
+              </ng-container>
+
+              <!-- Ooredoo -->
+              <ng-container *ngIf="operateur?.nomOperateur?.toLowerCase()?.includes('ooredoo')">
+                <th>CRM</th>
+                <th>Client</th>
+                <th>Contact</th>
+                <th>Debit</th>
+                <th>MSISDN</th>
+                <th>Bridge</th>
+                <th>Date OT</th>
+                <th>Date RDV</th>
+                <th>Heure RDV</th>
+                <th>SLA</th>
+                <th>Zone {{ zone?.label }}</th>
+                <th>Latitude</th>
+                <th>Longitude</th>
+              </ng-container>
+
+              <th>Adresse</th>
+
+            </tr>
+            </thead>
+
+            <tbody>
+            <tr *ngFor="let c of clients">
+              <!-- Tunisie Telecom -->
+              <ng-container *ngIf="operateur?.nomOperateur?.toLowerCase()?.includes('tunisie telecom')">
+                <td>{{c.label}}</td>
+                <td>{{c.nom}}</td>
+                <td>{{c.numTelephone}}</td>
+                <td>{{c.numTelephone2}}</td>
+                <td>{{c.email}}</td>
+                <td>{{c.numVoip}}</td>
+                <td>{{c.etat?.etatOT}}</td>
+                <td>{{c.etat?.dateOT}}</td>
+              </ng-container>
+
+              <!-- Ooredoo -->
+              <ng-container *ngIf="operateur?.nomOperateur?.toLowerCase()?.includes('ooredoo')">
+                <td>{{c.label}}</td>
+                <td>{{c.nom}}</td>
+                <td>{{c.numTelephone}}</td>
+                <td>{{c.debit}}</td>
+                <td>{{c.msisdn}}</td>
+                <td>{{c.bridge}}</td>
+                <td>{{c.etat?.dateOT}}</td>
+                <td>{{c.dateRDV}}</td>
+                <td>{{c.heureRDV}}</td>
+                <td>{{c.sla}}</td>
+                <td>{{c.sousZoneName}}</td>
+                <td>{{c.latitude}}</td>
+                <td>{{c.longitude}}</td>
+              </ng-container>
+
+              <td>{{c.adresse}}</td>
+
+            </tr>
+            </tbody>
+
+          </table>
+
+        </div>
+
+      </div>
+
+    </ng-container>
+
+  </div>
+</div>

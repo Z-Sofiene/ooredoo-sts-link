@@ -1,0 +1,184 @@
+<div class="header-body">
+      <h1>Gestion des Raccordements</h1>
+    </div>
+
+    <!-- Filters -->
+    <div class="filters-section">
+      <div class="filter-row">
+        <div class="filter-group">
+          <label for="filter-project">Projet</label>
+          <select id="filter-project" [(ngModel)]="filterProjet" (change)="onProjetChange(); applyFilters()">
+            <option value="">Tous les projets</option>
+            <option *ngFor="let projet of projets" [ngValue]="projet.nomProjet">{{ projet.nomProjet }}</option>
+          </select>
+        </div>
+
+        <div class="filter-group">
+          <label for="filter-zone">Zone</label>
+          <select id="filter-zone" [(ngModel)]="filterZone" (change)="applyFilters()" [disabled]="!filterProjet">
+            <option value="">Toutes les zones</option>
+            <option *ngFor="let zone of filteredZones" [ngValue]="zone.nomZone">{{ zone.nomZone }}</option>
+          </select>
+        </div>
+
+        <div class="filter-group">
+          <label for="filter-etat">État</label>
+          <select id="filter-etat" [(ngModel)]="filterEtat" (change)="applyFilters()">
+            <option value="">Tous les états</option>
+            <option value="Terminé">Terminé</option>
+            <option value="En cours">En cours</option>
+            <option value="En attente">En attente</option>
+            <option value="Annuler">Annulé</option>
+          </select>
+        </div>
+
+      </div>
+
+      <div class="filter-row">
+
+        <div class="filter-group">
+          <label for="filter-titre">Réf / Cas CRM</label>
+          <input type="text" id="filter-titre" [(ngModel)]="filterTitre" placeholder="Référence" (input)="applyFilters()">
+        </div>
+
+        <div class="filter-group">
+          <label for="filter-client">Client</label>
+          <input type="text" id="filter-client" [(ngModel)]="filterClient" placeholder="Nom ou prénom" (input)="applyFilters()">
+        </div>
+
+        <div class="filter-group">
+          <label for="filter-chef">Chef Équipe</label>
+          <input type="text" id="filter-chef" [(ngModel)]="filterChef" placeholder="Nom du chef" (input)="applyFilters()">
+        </div>
+
+      </div>
+
+      <div class="filter-row">
+        <div class="filter-group">
+          <label for="filter-date-rdv">Date RDV</label>
+          <input type="date" id="filter-date-rdv" [(ngModel)]="filterDateRDV" (change)="applyFilters()">
+        </div>
+
+        <div class="filter-group">
+          <label for="sort-field">Trier par</label>
+          <select id="sort-field" [(ngModel)]="sortField" (change)="applySorting()">
+            <option value="">Sélectionner</option>
+            <option value="projet">Projet</option>
+            <option value="zone">Zone</option>
+            <option value="titre">Référence</option>
+            <option value="nomClient">Client</option>
+            <option value="dateRDV">Date RDV</option>
+            <option value="etatRaccordement">État</option>
+          </select>
+        </div>
+
+        <div class="filter-group">
+          <label for="sort-direction">Ordre</label>
+          <select id="sort-direction" [(ngModel)]="sortDirection" (change)="applySorting()">
+            <option value="asc">Croissant</option>
+            <option value="desc">Décroissant</option>
+          </select>
+        </div>
+      </div>
+    </div>
+
+    <!-- Table -->
+    <div class="table-container">
+      <table>
+        <thead>
+        <tr>
+          <th>Cité</th>
+          <th>Réf / Cas CRM</th>
+          <th>Client</th>
+          <th>Contact</th>
+          <th>MSISDN</th>
+          <th>Adresse</th>
+          <th>Débit</th>
+          <th>RDV</th>
+          <th>Chef Équipe</th>
+          <th>État</th>
+          <th>Actions</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr *ngFor="let r of paginatedRaccordements()" class="table-row">
+          <td>
+            <div class="client-info">
+              <div class="client-name">{{ r.sousZone }}</div>
+              <div class="client-ref" *ngIf="r.cite"> {{ r.cite }}</div>
+            </div>
+          </td>
+          <td><div class="client-ref">{{ r.titre }}</div></td>
+          <td>
+            <div class="client-info">
+              <div class="client-name">{{ r.nomClient }} {{ r.prenomClient }}</div>
+            </div>
+          </td>
+          <td>
+            <div class="contact-info">{{ r.numTelephone }}</div>
+          </td>
+          <td>
+            <div class="msisdn-info">{{ r.numFixe }}</div>
+          </td>
+          <td>
+            <div class="address-info" [title]="r.adresseClient">
+              {{ (r.adresseClient?.length > 60 ? r.adresseClient.substring(0, 60) + '...' : r.adresseClient) }}
+            </div>
+          </td>
+          <td>
+            <div class="debit-info">{{ r.debit }}</div>
+          </td>
+          <td>
+            <div class="date-info">{{ r.dateRDV }} - {{ r.heureRDV }}</div>
+          </td>
+          <td>
+            <div class="chef-info">{{ r.chef_equipe }}</div>
+          </td>
+          <td>
+            <div class="badge" [ngClass]="{
+                'badge-success': r.etatRaccordement === 'Terminé',
+                'badge-warning': r.etatRaccordement === 'En cours',
+                'badge-danger': r.etatRaccordement === 'Annuler',
+                'badge-info': r.etatRaccordement === 'En attente',
+                'badge-secondary': !r.etatRaccordement
+              }">
+              {{ r.etatRaccordement || 'Non défini' }}
+            </div>
+          </td>
+          <td class="actions">
+            <button class="btn btn-warning btn-sm" title="Modifier" (click)="editRaccordement(r)">
+              <i class="fas fa-edit"></i>
+            </button>
+            <button class="btn btn-danger btn-sm" title="Supprimer" (click)="deleteRaccordement(r.raccordementId)">
+              <i class="fas fa-trash"></i>
+            </button>
+          </td>
+        </tr>
+        </tbody>
+      </table>
+
+      <!-- Empty State -->
+      <div *ngIf="filteredRaccordements.length === 0" class="empty-state">
+        <i class="fas fa-search empty-state-icon"></i>
+        <p>Aucun raccordement trouvé</p>
+        <p class="empty-state-sub">Essayez de modifier vos critères de recherche</p>
+      </div>
+
+      <!-- Pagination -->
+      <div class="pagination" *ngIf="filteredRaccordements.length > 0">
+        <div class="pagination-info">
+          Affichage de {{ ((currentPage - 1) * itemsPerPage) + 1 }} à
+          {{ getEndIndex() }}
+          sur {{ filteredRaccordements.length }} raccordements
+        </div>
+        <div class="pagination-controls">
+          <button class="btn btn-sm" (click)="prevPage()" [disabled]="currentPage === 1">
+            <i class="fas fa-chevron-left"></i> Précédent
+          </button>
+          <span>Page {{ currentPage }} sur {{ totalPages() }}</span>
+          <button class="btn btn-sm" (click)="nextPage()" [disabled]="currentPage === totalPages()">
+            Suivant <i class="fas fa-chevron-right"></i>
+          </button>
+        </div>
+      </div>
+    </div>

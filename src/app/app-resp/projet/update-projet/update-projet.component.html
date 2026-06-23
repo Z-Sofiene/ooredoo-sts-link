@@ -1,0 +1,76 @@
+
+<div class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+  <!-- Modal Card -->
+  <div class="bg-white rounded-xl shadow-lg w-full max-w-lg p-6 relative">
+    <!-- Modal Header -->
+    <div class="flex justify-between items-center mb-4">
+      <h3 class="text-2xl font-semibold flex items-center gap-2">
+        <i class="fas fa-plus-circle text-blue-600"></i> Mettre a jour ce Projet
+      </h3>
+      <button (click)="close.emit()" class="text-gray-400 hover:text-gray-600">
+        <i class="fas fa-times text-xl"></i>
+      </button>
+    </div>
+
+    <!-- Form -->
+    <div class="space-y-4">
+      <input
+        [(ngModel)]="projet.nomProjet"
+        placeholder="Nom du projet"
+        class="form-input"
+      />
+
+      <textarea
+        [(ngModel)]="projet.description"
+        placeholder="Description"
+        class="form-input"
+        rows="3"
+      ></textarea>
+
+      <div class="flex gap-4" >
+        <label for="date-debut" class="font-semibold w-32">Date debut</label>
+        <input
+          type="date"
+          [(ngModel)]="projet.date_debut"
+          class="form-input flex-1"
+        />
+      </div>
+
+      <div class="flex flex-col gap-2 md:flex-row md:items-center md:gap-4">
+        <label for="date-fin" class="font-semibold w-32">Date fin</label>
+        <input
+          id="date-fin"
+          type="date"
+          [(ngModel)]="projet.date_fin"
+          class="form-input flex-1 border rounded px-3 py-2"
+        />
+      </div>
+
+
+      <select [(ngModel)]="projet.operateur.id" class="form-input w-full">
+        <option value="">-- Choisir un opérateur --</option>
+        <option *ngFor="let op of operateurs" [value]="op.id">
+          {{ op.nomOperateur }}
+        </option>
+      </select>
+
+      <!-- Buttons -->
+      <div class="flex justify-end gap-2 mt-2">
+        <button
+          class="cancel-btn"
+          (click)="close.emit()"
+        >
+          <i class="fas fa-times"></i> Annuler
+        </button>
+        <button
+          class="submit-btn"
+          (click)="updateProjet()"
+        >
+          <i class="fas fa-check"></i> Enregistrer
+        </button>
+      </div>
+    </div>
+  </div>
+
+
+</div>

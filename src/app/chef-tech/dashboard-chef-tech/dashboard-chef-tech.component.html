@@ -1,0 +1,220 @@
+<div class="dashboard-chef-container">
+  <div class="floating-elements">
+    <div class="floating-element">🔧</div>
+    <div class="floating-element">📱</div>
+    <div class="floating-element">🔧</div>
+    <div class="floating-element">📱</div>
+    <div class="floating-element">🔧</div>
+  </div>
+  <!-- User Info Card -->
+  <div class="user-card glassmorphism">
+    <div class="user-header-top">
+      <div class="logo-container">
+        <img
+          [ngSrc]="'/stslogo.png'"
+          alt="STSGroupe Logo"
+          class="dashboard-logo"
+          height="70" width="226" priority />
+      </div>
+
+      <button class="logout-btn" (click)="logout()">
+        <i class="logout-icon">🚪</i>
+        <span class="logout-text">Déconnexion</span>
+      </button>
+    </div>
+    <div class="user-header">
+      <div class="avatar-container">
+        <img [ngSrc]="'/avatar.jpg'" alt="Profile" class="user-avatar" (click)="openProfileUpdateDialog()" fill priority/>
+        <div class="avatar-overlay" (click)="openProfileUpdateDialog()">
+          <i class="camera-icon">📷</i>
+        </div>
+      </div>
+
+      <div class="user-info">
+        <h1 class="welcome-text">Bonjour, <span class="user-name">{{ name || 'Utilisateur' }}</span> 👋</h1>
+        <p class="user-email">{{ email || 'chargement...' }}</p>
+        <div class="role-badge" [class]="role.toLowerCase()">
+          {{ role || 'Chargement...' }}
+        </div>
+      </div>
+    </div>
+
+    <div class="user-stats">
+      <div class="stat-item">
+        <div class="stat-icon">📅</div>
+        <div class="stat-content">
+          <h3>Projets Actifs</h3>
+          <p>5 en cours</p>
+        </div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-icon">✅</div>
+        <div class="stat-content">
+          <h3>Tâches Complétées</h3>
+          <p>87% cette semaine</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="user-actions">
+      <button class="btn btn-primary" (click)="downloadApk()">
+        <i class="btn-icon">📱</i>
+        Télécharger l'application mobile
+      </button>
+
+      <button class="btn btn-secondary" (click)="openFeedbackDialog()">
+        <i class="btn-icon">✉️</i>
+        Envoyer un message
+      </button>
+
+      <button class="btn btn-outline" >
+        <i class="btn-icon">🔒</i>
+        Demander un nouveau mot de passe
+      </button>
+    </div>
+  </div>
+
+  <!-- Other dashboard content can go here -->
+
+  <!-- Feedback Dialog -->
+  <div class="dialog-overlay" *ngIf="showFeedbackDialog">
+    <div class="dialog-container glassmorphism">
+      <div class="dialog-header">
+        <h2>Envoyer un Message</h2>
+        <button class="dialog-close" (click)="closeFeedbackDialog()">×</button>
+      </div>
+
+      <div class="dialog-content">
+        <div class="form-group">
+          <label>Sujet</label>
+          <select class="form-input" [(ngModel)]="feedback.type">
+            <option value="message">Message général</option>
+            <option value="problem">Problème technique</option>
+            <option value="suggestion">Suggestion</option>
+            <option value="complain">Plainte</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label>Sujet (facultatif)</label>
+          <input
+            type="text"
+            class="form-input"
+            placeholder="Titre de votre message"
+            [(ngModel)]="feedback.subject"
+          >
+        </div>
+
+        <div class="form-group">
+          <label>Message</label>
+          <textarea
+            class="form-input textarea"
+            rows="5"
+            placeholder="Décrivez votre message, problème ou suggestion..."
+            [(ngModel)]="feedback.message"
+            required
+          ></textarea>
+        </div>
+      </div>
+
+      <div class="dialog-actions">
+        <button class="btn btn-outline" (click)="closeFeedbackDialog()">Annuler</button>
+        <button
+          class="btn btn-primary"
+
+          [disabled]="!feedback.message.trim() || isLoading"
+        >
+          <span *ngIf="!isLoading">Envoyer</span>
+          <span *ngIf="isLoading">Envoi en cours...</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Update Profile Dialog -->
+  <div class="dialog-overlay" *ngIf="showProfileDialog">
+    <div class="dialog-container glassmorphism large">
+      <div class="dialog-header">
+        <h2>Mettre à jour le Profil</h2>
+        <button class="dialog-close" (click)="closeProfileDialog()">×</button>
+      </div>
+
+      <div class="dialog-content">
+        <!-- Photo Update Section -->
+        <div class="profile-photo-section">
+          <div class="avatar-container large">
+            <img [ngSrc]="'/avatar2.jpg'" alt="Profile" class="user-avatar large" fill priority/>
+
+            <label class="avatar-upload">
+              <input
+                type="file"
+                accept="image/*"
+                (change)="onFileSelected($event)"
+                style="display: none;"
+              >
+              <i class="camera-icon">📷</i>
+              Changer la photo
+            </label>
+          </div>
+        </div>
+
+        <!-- Password Update Section -->
+        <div class="form-section">
+          <h3>Changer le mot de passe</h3>
+
+          <div class="form-group">
+            <label>Mot de passe actuel</label>
+            <input
+              type="password"
+              class="form-input"
+              placeholder="Entrez votre mot de passe actuel"
+              [(ngModel)]="profileUpdate.currentPassword"
+            >
+          </div>
+
+          <div class="form-group">
+            <label>Nouveau mot de passe</label>
+            <input
+              type="password"
+              class="form-input"
+              placeholder="Entrez le nouveau mot de passe"
+              [(ngModel)]="profileUpdate.newPassword"
+            >
+          </div>
+
+          <div class="form-group">
+            <label>Confirmer le nouveau mot de passe</label>
+            <input
+              type="password"
+              class="form-input"
+              placeholder="Confirmez le nouveau mot de passe"
+              [(ngModel)]="profileUpdate.confirmPassword"
+            >
+          </div>
+
+          <div class="password-requirements">
+            <p><strong>Exigences de sécurité :</strong></p>
+            <ul>
+              <li>Minimum 8 caractères</li>
+              <li>Au moins une majuscule</li>
+              <li>Au moins un chiffre</li>
+              <li>Au moins un caractère spécial</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+
+      <div class="dialog-actions">
+        <button class="btn btn-outline" (click)="closeProfileDialog()">Annuler</button>
+        <button
+          class="btn btn-primary"
+
+          [disabled]="isLoading || (!profileUpdate.currentPassword && !profileUpdate.newPassword && !profileUpdate.photo)"
+        >
+          <span *ngIf="!isLoading">Mettre à jour</span>
+          <span *ngIf="isLoading">Mise à jour...</span>
+        </button>
+      </div>
+    </div>
+  </div>
+</div>

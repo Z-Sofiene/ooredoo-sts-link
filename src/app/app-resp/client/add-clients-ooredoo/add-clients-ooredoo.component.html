@@ -1,0 +1,169 @@
+<div class="modal-overlay" (click)="close.emit()">
+  <div class="modal-container" [class]="getThemeClass()" (click)="$event.stopPropagation()">
+
+    <!-- Modal Header -->
+    <div class="modal-header">
+      <div class="header-content">
+        <div class="operator-badge" *ngIf="operateur">
+          {{ operateur.nomOperateur }}
+        </div>
+        <h2 class="modal-title">
+          <i class="fas fa-users operator-icon"></i> Ajouter des Clients
+        </h2>
+      </div>
+
+
+      <button class="close-button" (click)="close.emit()" aria-label="Fermer">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                d="M6 18L18 6M6 6l12 12"/>
+        </svg>
+      </button>
+    </div>
+
+    <!-- Context Information Section -->
+    <div class="context-section">
+      <div class="context-grid">
+
+        <div class="context-item">
+          <span class="context-label">Projet</span>
+          <span class="context-value" [title]="projet?.nomProjet || 'Non spécifié'">
+              {{ projet?.nomProjet || 'Non spécifié' }}
+            </span>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===================== EXCEL IMPORT ===================== -->
+      <div class="form-section">
+
+        <!-- Excel controls -->
+        <div class="form-row">
+
+          <div class="form-group">
+            <label class="form-label">Num de la ligne d'en-tête</label>
+            <input type="number"
+                   min="1"
+                   [(ngModel)]="headerRow"
+                   class="form-input-client">
+          </div>
+
+          <div class="form-group">
+            <button class="btn btn-submit"
+                    (click)="fileInput.click()">
+              Import Excel
+            </button>
+
+            <input type="file"
+                   #fileInput
+                   (change)="onFileChange($event)"
+                   accept=".xls,.xlsx"
+                   hidden>
+          </div>
+
+        </div>
+
+        <!-- Send -->
+        <div class="form-actions">
+          <button class="btn btn-submit"
+                  (click)="batchAddClients()"
+                  [disabled]="clients.length === 0">
+            Enregistrer
+          </button>
+        </div>
+
+        <!-- ================= TABLE ================= -->
+        <!-- Add this after the form-actions div, before the table -->
+        <div class="selection-controls" *ngIf="clients.length > 0">
+          <div class="selection-info">
+            <label class="checkbox-label">
+              <input type="checkbox"
+                     [checked]="isAllSelected()"
+                     (change)="toggleSelectAll($event)">
+              Select All
+            </label>
+            <span class="selected-count">{{ getSelectedCount() }} / {{ clients.length }} selected</span>
+          </div>
+
+          <div class="selection-actions">
+            <button class="btn btn-secondary"
+                    (click)="addSelectedClients()"
+                    [disabled]="getSelectedCount() === 0">
+              Add Selected ({{ getSelectedCount() }})
+            </button>
+
+            <button class="btn btn-danger"
+                    (click)="clearSelection()"
+                    [disabled]="getSelectedCount() === 0">
+              Clear Selection
+            </button>
+          </div>
+        </div>
+
+        <!-- Modified table with checkbox column -->
+        <div class="table-container" *ngIf="clients.length > 0">
+          <table class="clients-table">
+            <thead>
+            <tr>
+              <!-- Add checkbox column header -->
+              <th style="width: 40px">
+                <input type="checkbox"
+                       [checked]="isAllSelected()"
+                       (change)="toggleSelectAll($event)">
+              </th>
+
+              <!-- Ooredoo -->
+              <ng-container *ngIf="operateur?.nomOperateur?.toLowerCase()?.includes('ooredoo')">
+                <th>CRM</th>
+                <th>Client</th>
+                <th>Contact</th>
+                <th>Debit</th>
+                <th>MSISDN</th>
+                <th>Bridge</th>
+                <th>Date OT</th>
+                <th>Date RDV</th>
+                <th>Heure RDV</th>
+                <th>SLA</th>
+                <th>Zone</th>
+                <th>Latitude</th>
+                <th>Longitude</th>
+              </ng-container>
+              <th>Adresse</th>
+            </tr>
+            </thead>
+
+            <tbody>
+            <tr *ngFor="let c of clients; let i = index">
+              <!-- Checkbox cell -->
+              <td>
+                <input type="checkbox"
+                       [(ngModel)]="c.selected"
+                       (change)="onSelectionChange()">
+              </td>
+
+              <!-- Ooredoo -->
+              <ng-container *ngIf="operateur?.nomOperateur?.toLowerCase()?.includes('ooredoo')">
+                <td>{{c.label}}</td>
+                <td>{{c.nom}}</td>
+                <td>{{c.numTelephone}}</td>
+                <td>{{c.debit}}</td>
+                <td>{{c.msisdn}}</td>
+                <td>{{c.bridge}}</td>
+                <td>{{c.etat?.dateOT}}</td>
+                <td>{{c.dateRDV}}</td>
+                <td>{{c.heureRDV}}</td>
+                <td>{{c.sla}}</td>
+                <td>{{c.zoneName}}</td>
+                <td>{{c.latitude}}</td>
+                <td>{{c.longitude}}</td>
+              </ng-container>
+
+              <td>{{c.adresse}}</td>
+            </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+  </div>
+</div>

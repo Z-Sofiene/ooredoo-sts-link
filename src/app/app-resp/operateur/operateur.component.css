@@ -1,0 +1,40 @@
+.table-container {
+  width: 100%;
+  overflow-x: auto;
+}
+
+table {
+  width: 100% !important;
+  border-collapse: collapse;
+  table-layout: fixed !important; /* forces fixed widths */
+}
+
+thead th {
+  text-align: left;
+  padding: 0.75rem 1rem;
+  background-color: #f3f4f6;
+  border-bottom: 1px solid #ddd;
+}
+
+/* Fix "Nom" column width */
+thead th:first-child {
+  width: 350px !important; /* adjust based on your longest project name */
+  min-width: 350px !important;
+  max-width: 350px !important;
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
+  white-space: nowrap !important;
+}
+
+tbody td {
+  padding: 0.75rem 1rem;
+  border-bottom: 1px solid #eee;
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
+  white-space: nowrap !important;
+}
+
+.actions {
+  text-align: center;
+  min-width: 120px !important;
+}

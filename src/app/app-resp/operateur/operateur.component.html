@@ -1,0 +1,29 @@
+    <div class="header-body">
+      <h1>Liste des Operateurs</h1>
+    </div>
+
+
+    <!-- Table -->
+    <div class="table-container">
+      <table>
+        <thead>
+        <tr>
+          <th>Operateur</th>
+          <th class="text-center">Actions</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr *ngFor="let op of operateurs">
+          <td><strong>{{ op.nomOperateur }}</strong></td>
+          <td class="actions">
+            <button class="btn btn-danger btn-sm" (click)="deleteOperateur(op.id)">
+              <i class="fa fa-trash"></i>
+            </button>
+          </td>
+        </tr>
+        </tbody>
+      </table>
+
+    </div>
+
+

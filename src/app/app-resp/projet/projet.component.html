@@ -1,0 +1,89 @@
+    <!-- Header -->
+    <div class="header-body">
+      <h1>Liste des Projets</h1>
+
+    </div>
+
+
+    <!-- Filters -->
+    <div class="filters">
+      <div class="filter-group">
+        <label for="filter-nom">Nom du projet</label>
+        <input type="text" id="filter-nom" [(ngModel)]="filterNom" placeholder="Filtrer par nom" (input)="applyFilters()">
+      </div>
+      <div class="filter-group">
+        <label for="filter-operateur">Opérateur</label>
+        <select id="filter-operateur" [(ngModel)]="filterOperateur" (change)="applyFilters()">
+          <option value="">Tous</option>
+          <option *ngFor="let op of operators" [ngValue]="op">{{ op }}</option>
+        </select>
+      </div>
+
+      <div class="filter-group">
+        <label for="filter-date-debut">Date de début</label>
+        <input type="date" id="filter-date-debut" [(ngModel)]="filterDateDebut" (change)="applyFilters()">
+      </div>
+      <div class="filter-group">
+        <label for="filter-date-fin">Date de fin</label>
+        <input type="date" id="filter-date-fin" [(ngModel)]="filterDateFin" (change)="applyFilters()">
+      </div>
+
+    </div>
+
+    <!-- Table -->
+    <div class="table-container">
+      <table>
+        <thead>
+        <tr>
+          <th>Nom</th>
+          <th>Opérateur</th>
+          <th>Description</th>
+          <th>Début</th>
+          <th>Fin</th>
+          <th class="text-center">Actions</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr *ngFor="let projet of paginatedProjets">
+          <td><strong>{{ projet.nomProjet }}</strong></td>
+          <td>{{ projet.operateur.nomOperateur }}</td>
+          <td>{{ projet.description }}</td>
+          <td><i class="fa fa-play-circle text-blue-600"></i> {{ projet.date_debut }}</td>
+          <td><i class="fa fa-flag-checkered text-green-600"></i> {{ projet.date_fin }}</td>
+          <td class="actions">
+            <button class="btn btn-warning btn-sm" (click)="toggleUpdateForm(projet)">
+              <i class="fa fa-edit"></i>
+              {{ showUpdateForm ? '' : '' }}
+            </button>
+            <button class="btn btn-danger btn-sm" (click)="deleteProjet(projet.id)">
+              <i class="fa fa-trash"></i>
+            </button>
+          </td>
+        </tr>
+        </tbody>
+      </table>
+
+      <!-- Pagination -->
+      <div class="pagination" *ngIf="totalPages > 1">
+        <button (click)="goToPage(currentPage - 1)" [disabled]="currentPage === 1">
+          <i class="fas fa-chevron-left"></i> Précédent
+        </button>
+        <span *ngFor="let page of [].constructor(totalPages); let i = index">
+          <button (click)="goToPage(i + 1)" [class.active]="currentPage === i + 1">{{ i + 1 }}</button>
+        </span>
+        <button (click)="goToPage(currentPage + 1)" [disabled]="currentPage === totalPages">
+          Suivant <i class="fas fa-chevron-right"></i>
+        </button>
+      </div>
+    </div>
+
+
+<!-- Modal for Add Project -->
+  <div *ngIf="showUpdateForm">
+    <app-update-projet
+      [selectedProjet]="currentProjet"
+      (refresh)="loadProjets()"
+      (close)="toggleUpdateForm()">
+    </app-update-projet>
+  </div>
+

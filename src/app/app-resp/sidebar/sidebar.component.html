@@ -1,0 +1,75 @@
+<div class="sidebar-container">
+  <div class="sidebar">
+    <!-- Floating bubbles background -->
+    <div class="sidebar-bubbles">
+      <div class="sidebar-bubble"></div>
+      <div class="sidebar-bubble"></div>
+      <div class="sidebar-bubble"></div>
+      <div class="sidebar-bubble"></div>
+      <div class="sidebar-bubble"></div>
+    </div>
+
+    <!-- Enhanced header with better structure -->
+    <div class="sidebar-header">
+      <div class="logo-wrapper">
+        <img
+          [ngSrc]="'/stslogo.png'"
+          alt="STSGroupe Logo"
+          class="dashboard-logo"
+          height="70" width="226"
+          priority/>
+      </div>
+    </div>
+
+    <!-- Enhanced navigation with improved accessibility -->
+    <nav class="sidebar-nav">
+      <ul class="nav-list">
+        <li *ngFor="let item of menuItems" class="nav-item">
+            <a
+            class="nav-link"
+            [class.active]="item.active"
+            (click)="navigateTo(item.route)"
+            [attr.aria-label]="item.label"
+            role="button"
+            tabindex="0"
+          >
+            <div class="nav-icon-wrapper">
+              <i [class]="item.icon" class="nav-icon"></i>
+            </div>
+            <span class="nav-label">{{ item.label }}</span>
+            <div class="nav-indicator"></div>
+          </a>
+        </li>
+      </ul>
+    </nav>
+
+    <!-- Footer -->
+    <div class="sidebar-footer">
+      <div *ngIf="currentUser" class="user-card">
+        <div class="user-avatar-wrapper">
+          <div class="user-avatar">
+            <i class="fas fa-user"></i>
+          </div>
+          <div class="user-status"></div>
+        </div>
+        <div class="user-info">
+          <div class="user-name">{{ currentUser }}</div>
+          <div class="user-role">{{ roleUser }}</div>
+        </div>
+      </div>
+
+      <!-- Enhanced logout button with better accessibility -->
+      <button
+        class="logout-button"
+        (click)="logout()"
+        aria-label="Se déconnecter"
+        type="button"
+      >
+        <div class="logout-icon">
+          <i class="fas fa-sign-out-alt"></i>
+        </div>
+        <span class="logout-text">Déconnexion</span>
+      </button>
+    </div>
+  </div>
+</div>

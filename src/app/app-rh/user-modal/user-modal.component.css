@@ -1,0 +1,210 @@
+/* =========================================================
+   MODAL (Backdrop + Card)
+========================================================= */
+.modal-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.55);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 50;
+  backdrop-filter: blur(6px);
+  padding: 16px;
+}
+
+.modal-card {
+  background: rgba(255, 255, 255, 0.92);
+  border-radius: 18px;
+  width: 100%;
+  max-width: 720px; /* bigger than max-w-lg */
+  padding: 24px;
+  position: relative;
+  box-shadow: 0 25px 70px rgba(0, 0, 0, 0.2);
+  border: 1px solid rgba(255, 255, 255, 0.55);
+}
+
+/* =========================================================
+   HEADER
+========================================================= */
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 14px;
+}
+
+.modal-title {
+  font-size: 22px;
+  font-weight: 800;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  color: #0f172a;
+}
+
+.close-btn {
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  color: #94a3b8;
+  font-size: 20px;
+  transition: 0.2s ease;
+}
+
+.close-btn:hover {
+  color: #475569;
+  transform: scale(1.05);
+}
+
+/* =========================================================
+   USER TYPE SWITCH (FIXED)
+========================================================= */
+.type-switch {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap; /* responsive */
+  margin-bottom: 14px;
+}
+
+.type-btn {
+  width: auto !important; /* 🔥 Fix overflow */
+  flex: 1;
+  min-width: 140px;
+  padding: 12px 14px;
+  border-radius: 14px;
+  font-size: 14px;
+  font-weight: 800;
+  white-space: nowrap;
+}
+
+/* =========================================================
+   FORM
+========================================================= */
+.form-group {
+  margin-bottom: 16px;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+}
+
+.form-group label {
+  font-weight: 800;
+  color: #1e293b;
+  margin-bottom: 8px;
+  font-size: 14px;
+}
+
+.form-input {
+  padding: 14px 16px;
+  border: 1.5px solid rgba(148, 163, 184, 0.45);
+  border-radius: 14px;
+  background: rgba(255, 255, 255, 0.9);
+  font-size: 15px;
+  transition: 0.25s ease;
+  color: #0f172a;
+  outline: none;
+}
+
+.form-input:focus {
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.22);
+  transform: translateY(-1px);
+}
+
+/* Icons inside inputs */
+.form-icon {
+  position: absolute;
+  right: 14px;
+  top: 38px;
+  color: #94a3b8;
+  font-size: 16px;
+}
+
+/* =========================================================
+   PHOTO PREVIEW
+========================================================= */
+.photo-preview img {
+  width: 120px;
+  height: 120px;
+  border-radius: 14px;
+  object-fit: cover;
+  border: 2px solid rgba(148, 163, 184, 0.35);
+}
+
+/* =========================================================
+   BUTTONS
+========================================================= */
+.actions-row {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-top: 10px;
+}
+
+.cancel-btn {
+  padding: 12px 16px;
+  border-radius: 14px;
+  border: 2px solid rgba(148, 163, 184, 0.5);
+  background: rgba(255, 255, 255, 0.8);
+  font-weight: 800;
+  cursor: pointer;
+  transition: 0.25s ease;
+}
+
+.cancel-btn:hover {
+  background: rgba(241, 245, 249, 0.95);
+  transform: translateY(-1px);
+}
+
+/* Your main gradient button */
+.submit-btn {
+  width: 100%;
+  padding: 12px 16px;
+  background: linear-gradient(135deg, #3b82f6, #1e40af, #3b82f6);
+  background-size: 200% 100%;
+  color: #fff;
+  font-size: 15px;
+  font-weight: 900;
+  border: none;
+  border-radius: 14px;
+  cursor: pointer;
+  transition: 0.3s ease;
+  box-shadow: 0 12px 30px rgba(59, 130, 246, 0.35);
+  position: relative;
+  overflow: hidden;
+}
+
+.submit-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 18px 45px rgba(59, 130, 246, 0.5);
+  background-position: 100% 0;
+}
+
+.submit-btn:active {
+  transform: translateY(0);
+}
+
+/* Make the final submit button NOT full width inside actions row */
+.submit-main {
+  width: auto !important;
+}
+
+/* =========================================================
+   RESPONSIVE
+========================================================= */
+@media (max-width: 600px) {
+  .modal-card {
+    padding: 18px;
+    max-width: 95vw;
+  }
+
+  .modal-title {
+    font-size: 18px;
+  }
+
+  .type-btn {
+    min-width: 120px;
+    font-size: 13px;
+  }
+}

@@ -1,0 +1,136 @@
+.footer-navbar {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: auto;
+  min-height: 80px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 24px;
+  background: rgb(255 255 255 / 70%);
+  backdrop-filter: blur(15px);
+  border-top: 1px solid rgb(148 163 184 / 15%);
+  box-shadow: 0 -10px 25px rgb(71 85 105 / 8%);
+  z-index: 1000;
+}
+
+.user-card {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.user-avatar-wrapper {
+  position: relative;
+}
+
+.user-avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: linear-gradient(145deg, #3b82f6, #2563eb);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-size: 18px;
+  box-shadow: 0 4px 12px rgb(37 99 235 / 30%);
+}
+
+.user-status {
+  position: absolute;
+  bottom: 4px;
+  right: 4px;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: #22c55e;
+  border: 2px solid white;
+}
+
+.user-info {
+  display: flex;
+  flex-direction: column;
+}
+
+.user-name {
+  font-size: 14px;
+  font-weight: 600;
+  color: #1e293b;
+}
+
+.user-role {
+  font-size: 12px;
+  color: #64748b;
+}
+
+/* Logout button */
+.logout-button {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 16px;
+  border: none;
+  border-radius: 12px;
+  background: linear-gradient(145deg, #ef4444, #dc2626);
+  color: white;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 12px rgb(239 68 68 / 30%);
+}
+
+.logout-button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 15px rgb(239 68 68 / 40%);
+}
+
+.logout-icon {
+  font-size: 16px;
+}
+
+.logout-text {
+  font-size: 14px;
+}
+
+/* ================================
+   ANIMATIONS
+================================ */
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+
+@media (width <= 768px) {
+  .logout-button {
+    width: auto;                 /* 🔥 stop full-width */
+    padding: 6px 10px;           /* tighter */
+    gap: 6px;
+    font-size: 12px;
+    border-radius: 10px;
+    justify-content: center;     /* better for mobile */
+    box-shadow: 0 2px 6px rgb(239 68 68 / 25%);
+  }
+
+  .logout-button:hover {
+    transform: none;             /* no scale on touch */
+  }
+
+  .logout-icon {
+    font-size: 14px;
+  }
+
+  .logout-text {
+    font-size: 12px;
+  }
+}

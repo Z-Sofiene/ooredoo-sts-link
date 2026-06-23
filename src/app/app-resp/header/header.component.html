@@ -1,0 +1,64 @@
+<!-- HTML Structure (no changes needed to your template structure) -->
+<header class="header-navbar">
+  <div class="logo-wrapper">
+    <div class="logo-icon">
+      <i class="fas fa-network-wired"></i>
+    </div>
+    <h3 class="logo-text">STSGroupe</h3>
+  </div>
+
+  <!-- Hamburger Menu Button (mobile only) -->
+  <button class="menu-toggle" (click)="toggleMenu()" aria-label="Toggle menu">
+    <i class="fas fa-bars"></i>
+  </button>
+
+  <!-- Navigation (desktop) -->
+  <nav class="main-nav desktop-nav" aria-label="Main navigation">
+    <ul class="nav-list">
+      <li *ngFor="let item of menuItems" class="nav-item">
+        <a
+          class="nav-link"
+          [class.active]="item.active"
+          (click)="navigateTo(item.route)"
+          role="button"
+          tabindex="0"
+        >
+          <i [class]="item.icon" class="nav-icon"></i>
+          <span class="nav-label">{{ item.label }}</span>
+        </a>
+      </li>
+    </ul>
+  </nav>
+</header>
+
+<!-- Fullscreen Overlay Menu (mobile) -->
+<div class="menu-overlay" [class.open]="isMenuOpen" role="dialog" aria-modal="true" aria-label="Mobile menu">
+  <div class="overlay-content">
+    <div class="overlay-header">
+      <div class="overlay-logo">
+        <i class="fas fa-network-wired"></i>
+        <span class="overlay-title">STSGroupe</span>
+      </div>
+      <button class="close-btn" (click)="toggleMenu()" aria-label="Close menu">
+        <i class="fas fa-times"></i>
+      </button>
+    </div>
+
+    <nav class="overlay-nav" aria-label="Mobile navigation">
+      <ul class="overlay-list">
+        <li *ngFor="let item of menuItems" class="overlay-item">
+          <a
+            class="overlay-link"
+            [class.active]="item.active"
+            (click)="navigateTo(item.route); toggleMenu()"
+            role="button"
+            tabindex="0"
+          >
+            <i [class]="item.icon" class="overlay-icon"></i>
+            <span class="overlay-label">{{ item.label }}</span>
+          </a>
+        </li>
+      </ul>
+    </nav>
+  </div>
+</div>

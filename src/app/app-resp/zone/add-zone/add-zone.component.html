@@ -1,0 +1,286 @@
+<div class="modal-overlay" (click)="closeModal()">
+  <div class="modal-container" [class]="getThemeClass()" (click)="$event.stopPropagation()">
+
+    <!-- Modal Header -->
+    <div class="modal-header">
+      <div class="header-content">
+        <h2 class="modal-title">
+          <i class="fas fa-user-shield operator-icon"></i> Ajouter une Zone
+        </h2>
+        <div class="operator-badge" *ngIf="operateur">
+          {{ operateur.nomOperateur }}
+        </div>
+      </div>
+      <button class="close-button" (click)="close.emit()" aria-label="Fermer">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+        </svg>
+      </button>
+    </div>
+
+    <!-- Context Information Section -->
+    <div class="context-section">
+      <div class="context-grid">
+        <div class="context-item">
+          <span class="context-label">Opérateur</span>
+          <span class="context-value operator-value" [title]="operateur?.nomOperateur || 'Non spécifié'">
+            {{ operateur?.nomOperateur || 'Non spécifié' }}
+          </span>
+        </div>
+        <div class="context-item">
+          <span class="context-label">Projet</span>
+          <span class="context-value" [title]="projet?.nomProjet || 'Non spécifié'">
+            {{ projet?.nomProjet || 'Non spécifié' }}
+          </span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Form Section -->
+    <div class="form-section">
+      <form [formGroup]="zoneForm" class="client-form">
+
+        <!-- Required Fields -->
+        <div class="form-row">
+          <!-- Zone Name -->
+          <div class="form-group">
+            <label for="label" class="form-label">
+              Nom de la zone <span class="required">*</span>
+            </label>
+            <input
+              id="label"
+              formControlName="label"
+              placeholder="Nom de la zone"
+              class="form-input-zone"
+              [class.error]="zoneForm.get('label')?.invalid && zoneForm.get('label')?.touched"
+            />
+            <div *ngIf="zoneForm.get('label')?.invalid && zoneForm.get('label')?.touched" class="error-message">
+              Le nom de la zone est requis
+            </div>
+          </div>
+
+          <!-- Description -->
+          <div class="form-group">
+            <label for="description" class="form-label">
+              Description
+            </label>
+            <textarea
+              id="description"
+              formControlName="description"
+              placeholder="Description"
+              class="form-input-zone textarea"
+              rows="3"
+            ></textarea>
+          </div>
+
+          <!-- Project Selection -->
+          <div class="form-group">
+            <label for="projet" class="form-label" *ngIf="!projet">
+              Projet <span class="required">*</span>
+            </label>
+
+            <div *ngIf="!projet">
+              <select
+                id="projet"
+                formControlName="projet"
+                class="form-input-zone"
+                [class.error]="zoneForm.get('projet')?.invalid && zoneForm.get('projet')?.touched"
+              >
+                <option [ngValue]="null" disabled>
+                  -- Choisir un projet --
+                </option>
+                <option *ngFor="let pr of projets" [ngValue]="pr">
+                  {{ pr.nomProjet }}
+                </option>
+              </select>
+              <div *ngIf="zoneForm.get('projet')?.invalid && zoneForm.get('projet')?.touched" class="error-message">
+                Le projet est requis
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- SousZones Toggle Section -->
+        <div class="section-divider">
+          <div class="section-header">
+            <div class="section-title">
+              <h3 class="form-label">Sous-Zones</h3>
+              <span class="section-subtitle">(Optionnel)</span>
+            </div>
+            <button
+              type="button"
+              (click)="toggleSousZones()"
+              class="toggle-switch"
+              [class.active]="addSousZones"
+              aria-label="Activer/désactiver les sous-zones"
+            >
+              <span class="toggle-slider"></span>
+            </button>
+          </div>
+
+          <!-- SousZones Content -->
+          <div *ngIf="addSousZones" class="section-content">
+            <!-- SousZones List -->
+            <div *ngIf="sousZonesArray.length > 0" class="souszones-container">
+              <div
+                *ngFor="let sousZone of sousZonesArray.controls; let i = index"
+                class="souszone-item"
+              >
+                <div class="souszone-card">
+                  <!-- Left Column: SousZone Form -->
+                  <div class="souszone-form-column">
+                    <div class="souszone-header">
+                      <h4 class="souszone-title">
+                        <i class="fas fa-folder mr-2" [style.color]="getThemeClass() === 'theme-ooredoo' ? '#e30613' : getThemeClass() === 'theme-orange' ? '#ff7900' : getThemeClass() === 'theme-tunisietelecom' ? '#0077b6' : '#6c757d'"></i>
+                        Sous-Zone {{ i + 1 }}
+                      </h4>
+                      <button
+                        type="button"
+                        (click)="removeSousZone(i)"
+                        class="btn btn-remove"
+                        aria-label="Supprimer cette sous-zone"
+                      >
+                        <i class="fas fa-trash"></i>
+                      </button>
+                    </div>
+
+                    <!-- SousZone Form -->
+                    <div class="souszone-form">
+                      <!-- SousZone Label -->
+                      <div class="form-group">
+                        <label class="form-label">
+                          Nom de la Sous-Zone <span class="required">*</span>
+                        </label>
+                        <input
+                          [formControl]="getSousZoneControl(i, 'label')"
+                          placeholder="Nom de la sous-zone"
+                          class="form-input-zone"
+                          [class.error]="sousZone.get('label')?.invalid && sousZone.get('label')?.touched"
+                        />
+                        <div *ngIf="sousZone.get('label')?.invalid && sousZone.get('label')?.touched" class="error-message">
+                          Le nom de la sous-zone est requis
+                        </div>
+                      </div>
+
+                      <!-- SousZone Description -->
+                      <div class="form-group">
+                        <label class="form-label">
+                          Description
+                        </label>
+                        <textarea
+                          [formControl]="getSousZoneControl(i, 'description')"
+                          placeholder="Description de la sous-zone"
+                          class="form-input-zone textarea"
+                          rows="2"
+                        ></textarea>
+                      </div>
+                    </div>
+                  </div>
+
+                  <!-- Right Column: Cites Section -->
+                  <div class="cites-column">
+                    <div class="cites-section">
+                      <div class="cites-header">
+                        <div class="cites-title">
+                          <label class="form-label mb-0">Cités</label>
+                          <span class="cites-subtitle">(Optionnel)</span>
+                        </div>
+                        <button
+                          type="button"
+                          (click)="toggleCites(i)"
+                          class="toggle-switch small"
+                          [class.active]="sousZoneHasCites(i)"
+                          aria-label="Activer/désactiver les cités"
+                        >
+                          <span class="toggle-slider"></span>
+                        </button>
+                      </div>
+
+                      <!-- Cites Content -->
+                      <div *ngIf="sousZoneHasCites(i)" class="cites-content">
+                        <!-- Cites List -->
+                        <div *ngIf="getCitesArray(i).length > 0" class="cites-list">
+                          <div
+                            *ngFor="let cite of getCitesArray(i).controls; let j = index"
+                            class="cite-item-row"
+                          >
+                            <div class="cite-input-wrapper">
+                              <input
+                                [formControl]="getCiteControl(i, j)"
+                                placeholder="Nom de la cité"
+                                class="form-input-zone cite-input"
+                                [class.error]="cite.get('nomCite')?.invalid && cite.get('nomCite')?.touched"
+                              />
+                              <div *ngIf="cite.get('nomCite')?.invalid && cite.get('nomCite')?.touched" class="error-message">
+                                Le nom de la cité est requis
+                              </div>
+                            </div>
+                            <button
+                              type="button"
+                              (click)="removeCite(i, j)"
+                              class="btn btn-remove-cite"
+                              aria-label="Supprimer cette cité"
+                            >
+                              <i class="fas fa-trash"></i>
+                            </button>
+                          </div>
+                        </div>
+                        <button
+                          type="button"
+                          (click)="addCite(i)"
+                          class="btn btn-add-cite"
+                        >
+                          <i class="fas fa-plus mr-2"></i> Ajouter une Cité
+                        </button>
+                        <!-- Empty State for Cites -->
+                        <div *ngIf="getCitesArray(i).length === 0" class="cites-empty-state">
+                          <i class="fas fa-building empty-state-icon"></i>
+                          <p class="empty-state-text">Aucune cité ajoutée</p>
+                          <p class="empty-state-subtext">Cliquez sur "Ajouter une Cité" pour commencer</p>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <button
+              type="button"
+              (click)="addSousZone()"
+              class="btn btn-add-souszone"
+            >
+              <i class="fas fa-plus mr-2"></i> Ajouter une Sous-Zone
+            </button>
+
+            <!-- Empty State for SousZones -->
+            <div *ngIf="sousZonesArray.length === 0" class="souszones-empty-state">
+              <i class="fas fa-folder-open empty-state-icon"></i>
+              <p class="empty-state-text">Aucune sous-zone ajoutée</p>
+              <p class="empty-state-subtext">Cliquez sur "Ajouter une Sous-Zone" pour commencer</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Form Actions -->
+        <div class="form-actions">
+          <button
+            type="button"
+            class="btn btn-cancel"
+            (click)="closeModal()"
+          >
+            <i class="fas fa-times mr-2"></i> Annuler
+          </button>
+          <button
+            type="button"
+            class="btn btn-submit"
+            (click)="addZone()"
+            [disabled]="zoneForm.invalid"
+            [class.btn-disabled]="zoneForm.invalid"
+          >
+            <i class="fas fa-check mr-2"></i> Enregistrer
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>

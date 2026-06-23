@@ -1,0 +1,426 @@
+/* Access Denied Page */
+.access-denied-body {
+  margin: 0;
+  min-height: 100vh;
+  height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1.25rem;
+  font-family: "Segoe UI", sans-serif;
+  background: linear-gradient(
+    135deg,
+    #1e293b 0%,
+    #0f172a 25%,
+    #1e1b4b 50%,
+    #3730a3 75%,
+    #7e22ce 100%
+  );
+  background-size: 300% 300%;
+  animation: gradientFlow 20s ease infinite;
+  overflow: hidden;
+  position: relative;
+}
+
+@keyframes gradientFlow {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+/* Main Container */
+.denied-container {
+  backdrop-filter: blur(20px);
+  background: rgb(255 255 255 / 8%);
+  border: 1px solid rgb(255 255 255 / 15%);
+  border-radius: 24px;
+  box-shadow:
+    0 20px 60px rgb(0 0 0 / 40%),
+    0 0 80px rgb(120 119 198 / 10%) inset;
+  padding: 2.5rem;
+  width: 95%;
+  height: 90vh;
+  max-width: 1400px;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  grid-template-rows: 1fr auto;
+  gap: 2.5rem;
+  animation: fadeInUp 0.8s ease-out forwards;
+  transform: translateY(40px);
+  opacity: 0;
+  z-index: 2;
+  position: relative;
+}
+
+@keyframes fadeInUp {
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+/* Left Side: Error Information */
+.error-info-side {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding-right: 2rem;
+  border-right: 1px solid rgb(255 255 255 / 10%);
+}
+
+/* Error Icon */
+.error-icon {
+  width: 100px;
+  height: 100px;
+  margin: 0.5rem 0 1.5rem;
+  position: relative;
+  animation: shake 0.5s ease-in-out 0.8s both;
+}
+
+.error-circle {
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(135deg, rgb(239 68 68 / 20%), rgb(220 38 38 / 30%));
+  border-radius: 50%;
+  position: absolute;
+  top: 0;
+  left: 0;
+  box-shadow:
+    0 0 40px rgb(239 68 68 / 30%),
+    inset 0 0 20px rgb(255 255 255 / 10%);
+}
+
+.error-symbol {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  color: #fecaca;
+  font-size: 3.5rem;
+  font-weight: bold;
+  text-shadow: 0 0 20px rgb(239 68 68 / 80%);
+}
+
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  10%, 30%, 50%, 70%, 90% { transform: translateX(-5px); }
+  20%, 40%, 60%, 80% { transform: translateX(5px); }
+}
+
+/* Error Number */
+.error-number {
+  font-size: 5rem;
+  font-weight: 900;
+  background: linear-gradient(135deg, #fecaca, #f87171, #dc2626);
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  margin-bottom: 0.5rem;
+  line-height: 1;
+  text-shadow: 0 10px 30px rgb(220 38 38 / 30%);
+}
+
+/* Titles */
+.denied-title {
+  color: #fecaca;
+  font-size: 2rem;
+  font-weight: 700;
+  margin-bottom: 0.5rem;
+  text-shadow: 0 2px 10px rgb(0 0 0 / 30%);
+}
+
+.denied-subtitle {
+  color: rgb(254 202 202 / 90%);
+  font-size: 1.1rem;
+  line-height: 1.4;
+  max-width: 300px;
+}
+
+/* Right Side: Messages */
+.messages-side {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  padding-left: 2rem;
+  overflow-y: auto;
+  max-height: calc(90vh - 200px);
+}
+
+/* Message Box */
+.message-box {
+  background: rgb(220 38 38 / 10%);
+  border: 1px solid rgb(239 68 68 / 30%);
+  border-radius: 16px;
+  padding: 1.25rem;
+  animation: slideIn 0.6s ease-out 0.4s both;
+  flex: 1;
+  min-height: 180px;
+  display: flex;
+  flex-direction: column;
+}
+
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.message-title {
+  color: #f87171;
+  font-size: 1rem;
+  font-weight: 600;
+  margin-bottom: 0.75rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.message-content {
+  color: rgb(254 202 202 / 80%);
+  font-size: 0.9rem;
+  line-height: 1.5;
+  flex: 1;
+}
+
+/* Possible Reasons */
+.reasons-list {
+  list-style: none;
+  padding: 0;
+  margin: 0.5rem 0 0;
+  text-align: left;
+}
+
+.reasons-list li {
+  color: rgb(254 202 202 / 80%);
+  padding: 0.35rem 0;
+  padding-left: 1.5rem;
+  position: relative;
+  font-size: 0.85rem;
+}
+
+.reasons-list li::before {
+  content: "✗";
+  position: absolute;
+  left: 0;
+  color: #f87171;
+  font-weight: bold;
+}
+
+/* Bottom Section: Actions and Footer */
+.bottom-section {
+  grid-column: 1 / -1;
+  border-top: 1px solid rgb(255 255 255 / 10%);
+  padding-top: 2rem;
+  margin-top: auto;
+}
+
+/* Action Buttons */
+.actions {
+  display: flex;
+  gap: 1rem;
+  justify-content: center;
+  flex-wrap: wrap;
+  margin-bottom: 1.5rem;
+}
+
+.btn {
+  padding: 0.75rem 1.5rem;
+  border: none;
+  border-radius: 10px;
+  font-weight: 600;
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  text-decoration: none;
+  min-width: 140px;
+}
+
+.btn-primary {
+  background: linear-gradient(135deg, #3b82f6, #1d4ed8);
+  color: white;
+  box-shadow: 0 4px 15px rgb(59 130 246 / 30%);
+}
+
+.btn-secondary {
+  background: rgb(255 255 255 / 10%);
+  color: white;
+  border: 1px solid rgb(255 255 255 / 20%);
+  backdrop-filter: blur(10px);
+}
+
+.btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgb(0 0 0 / 30%);
+}
+
+.btn-primary:hover {
+  box-shadow: 0 8px 20px rgb(59 130 246 / 50%);
+}
+
+.btn-secondary:hover {
+  background: rgb(255 255 255 / 15%);
+}
+
+.btn:active {
+  transform: translateY(-1px);
+}
+
+.btn-icon {
+  font-size: 1rem;
+}
+
+/* Contact Info */
+.contact-info {
+  text-align: center;
+  color: rgb(254 202 202 / 70%);
+  font-size: 0.85rem;
+  margin-bottom: 1rem;
+}
+
+.contact-link {
+  color: #93c5fd;
+  text-decoration: none;
+  transition: color 0.2s;
+}
+
+.contact-link:hover {
+  color: #60a5fa;
+  text-decoration: underline;
+}
+
+/* Footer */
+.denied-footer {
+  text-align: center;
+  font-size: 0.8rem;
+  color: rgb(255 255 255 / 50%);
+  padding-top: 1rem;
+  border-top: 1px solid rgb(255 255 255 / 5%);
+}
+
+/* Floating Forbidden Icons */
+.forbidden-icons {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 1;
+}
+
+.forbidden-icon {
+  position: absolute;
+  color: rgb(220 38 38 / 8%);
+  font-size: 2rem;
+  animation: floatRotate 30s linear infinite;
+}
+
+.forbidden-icon:nth-child(1) { top: 10%; left: 5%; animation-delay: 0s; }
+.forbidden-icon:nth-child(2) { top: 20%; right: 10%; animation-delay: -5s; }
+.forbidden-icon:nth-child(3) { bottom: 30%; left: 15%; animation-delay: -10s; }
+.forbidden-icon:nth-child(4) { bottom: 15%; right: 20%; animation-delay: -15s; }
+.forbidden-icon:nth-child(5) { top: 40%; left: 25%; animation-delay: -20s; }
+
+@keyframes floatRotate {
+  0% { transform: translateY(0) rotate(0deg); }
+  100% { transform: translateY(-100px) rotate(360deg); }
+}
+
+/* Responsive Design */
+@media (width <= 1024px) {
+  .denied-container {
+    grid-template-columns: 1fr;
+    grid-template-rows: auto auto auto;
+    gap: 2rem;
+    height: auto;
+    max-height: 90vh;
+    overflow-y: auto;
+  }
+
+  .error-info-side {
+    border-right: none;
+    border-bottom: 1px solid rgb(255 255 255 / 10%);
+    padding-right: 0;
+    padding-bottom: 2rem;
+  }
+
+  .messages-side {
+    padding-left: 0;
+    max-height: none;
+  }
+
+  .error-number {
+    font-size: 4rem;
+  }
+
+  .denied-title {
+    font-size: 1.75rem;
+  }
+}
+
+@media (width <= 768px) {
+  .denied-container {
+    padding: 2rem;
+    width: 95%;
+  }
+
+  .actions {
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .btn {
+    width: 100%;
+    max-width: 300px;
+  }
+
+  .error-number {
+    font-size: 3.5rem;
+  }
+
+  .denied-title {
+    font-size: 1.5rem;
+  }
+
+  .denied-subtitle {
+    font-size: 1rem;
+  }
+}
+
+@media (width <= 480px) {
+  .access-denied-body {
+    padding: 0.5rem;
+  }
+
+  .denied-container {
+    padding: 1.5rem;
+  }
+
+  .error-number {
+    font-size: 3rem;
+  }
+
+  .denied-title {
+    font-size: 1.25rem;
+  }
+
+  .error-icon {
+    width: 80px;
+    height: 80px;
+  }
+
+  .error-symbol {
+    font-size: 2.5rem;
+  }
+}

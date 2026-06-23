@@ -1,0 +1,670 @@
+<div [class]="getThemeClass()">
+
+  <div class="header-body">
+    <div class="header-content">
+      <div class="operator-badge" *ngIf="selectedOperator">
+        <i class="fa" [ngClass]="getOperatorIcon(selectedOperator)"></i>
+        <span>{{ selectedOperator.nomOperateur }}</span>
+      </div>
+      <h1>Dashboard Chef Projet</h1>
+    </div>
+  </div>
+
+  <!-- Breadcrumb Navigation -->
+  <div class="breadcrumb-nav" *ngIf="currentViewMode !== 'zone'">
+    <button class="breadcrumb-btn" (click)="backToZones()">
+      <i class="fa fa-arrow-left"></i>
+      Zones
+    </button>
+    <span class="breadcrumb-separator">/</span>
+    <span class="breadcrumb-current" *ngIf="selectedOperator && selectedProjet && selectedZone">
+      {{ selectedZone.label }}
+    </span>
+    <span class="breadcrumb-separator" *ngIf="currentViewMode === 'cite'">/</span>
+    <span class="breadcrumb-current" *ngIf="currentViewMode === 'cite' && selectedSousZone">
+      {{ selectedSousZone.label }}
+    </span>
+  </div>
+
+  <!-- Operators Section -->
+  <!--
+<div class="projets-section">
+  <div class="section-header">
+    <h3><i class="fa fa-building"></i> Opérateurs</h3>
+    <span class="project-count">{{ operators.length }} opérateur(s)</span>
+  </div>
+
+  <div class="scroll-wrapper">
+    <button class="scroll-btn left" (click)="scrollLeft(operatorScroll)">
+      <i class="fa fa-chevron-left"></i>
+    </button>
+
+    <div class="scroll-container" #operatorScroll>
+      <div class="projets-scroll-enhanced">
+        <div *ngIf="roleUser === 'CHEFPROJET'" class="projet-card-modern add-operator-card" (click)="addNewOperatorPrompt()">
+          <div class="card-icon"><i class="fa fa-plus"></i></div>
+          <div class="card-content"><strong>Opérateur</strong></div>
+        </div>
+
+        <div
+          class="projet-card-modern"
+          *ngFor="let op of operators"
+          (click)="selectOperator(op)"
+          [class.selected]="selectedOperator === op"
+          [class]="getOperatorCardClass(op)">
+          <div class="card-icon">
+            <i class="fa" [ngClass]="getIconForOperator(op.nomOperateur)"></i>
+          </div>
+          <div class="card-content"><strong>{{ op.nomOperateur }}</strong></div>
+        </div>
+      </div>
+    </div>
+
+    <button class="scroll-btn right" (click)="scrollRight(operatorScroll)">
+      <i class="fa fa-chevron-right"></i>
+    </button>
+  </div>
+</div>
+-->
+
+  <!-- Projects Section -->
+  <div class="projets-section" *ngIf="selectedOperator && filteredProjets.length > 0">
+    <div class="section-header">
+      <h3><i class="fa fa-folder-open"></i> Projets {{ selectedOperator.nomOperateur }}</h3>
+      <span class="project-count">{{ filteredProjets.length }} projet(s)</span>
+    </div>
+
+    <div class="scroll-wrapper">
+      <button class="scroll-btn left" (click)="scrollLeft(projectScroll)">
+        <i class="fa fa-chevron-left"></i>
+      </button>
+
+      <div class="scroll-container" #projectScroll>
+        <div class="projets-scroll-enhanced">
+          <div *ngIf="roleUser === 'CHEFPROJET'" class="projet-card-modern add-projet-card"
+               (click)="toggleAddProjet(selectedOperator)">
+            <div class="card-icon"><i class="fa fa-plus"></i></div>
+            <div class="card-content"><strong>Projet</strong></div>
+          </div>
+
+          <div class="projet-card-modern"
+               *ngFor="let projet of filteredProjets"
+               (click)="selectProjet(projet)"
+               [class.selected]="selectedProjet?.id === projet.id">
+            <div class="card-icon"><i class="fa fa-folder"></i></div>
+            <div class="card-content">
+              <strong>{{ projet.nomProjet }}</strong>
+              <small>{{ projet.operateur.nomOperateur }}</small>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <button class="scroll-btn right" (click)="scrollRight(projectScroll)">
+        <i class="fa fa-chevron-right"></i>
+      </button>
+    </div>
+  </div>
+
+  <!-- ZONES VIEW -->
+  <div class="table-section" *ngIf="selectedOperator && selectedProjet && currentViewMode === 'zone'">
+    <div class="section-header">
+      <div class="view-toggle">
+        <h3><i class="fa fa-map-marker"></i> Liste des Zones du projet : <span class="projet-name">{{ selectedProjet.nomProjet }}</span></h3>
+        <div class="toggle-buttons">
+
+          <div *ngIf="selectedOperator?.nomOperateur?.toLowerCase()?.includes('ooredoo')">
+            <button class="btn zone-btn-action"
+                    [class]="getOperatorClass('btn zone-btn-action')"
+                    (click)="openExportPreview(selectedProjet)"
+                    title="Exporter les raccordements terminés en Excel">
+              <i class="fa fa-plus"></i> <i class="fa fa-file"></i>
+
+            </button>
+          </div>
+          <div *ngIf="selectedOperator?.nomOperateur?.toLowerCase()?.includes('ooredoo')">
+            <button
+              class="zone-btn-action view-client-btn-small"
+              (click)="toggleClientsModel(selectedOperator, selectedProjet,'projet')"
+              title="Voir les clients">
+              <i class="fa fa-users"></i>
+              <span class="client-count-badge" *ngIf="totalClientsProjet">
+                    {{ totalClientsProjet || 0 }}
+                  </span>
+            </button>
+          </div>
+
+          <div *ngIf="selectedOperator?.nomOperateur?.toLowerCase()?.includes('ooredoo')">
+            <button class="btn submit-btn" [class]="getOperatorClass('btn')" (click)="addClientsOoredoo(selectedOperator,selectedProjet)">
+              <i class="fa fa-plus"></i>
+              <span class="btn-text">{{ showAddZoneForm ? 'Fermer' : 'Ajouter des clients' }}</span>
+            </button>
+          </div>
+          <button class="btn submit-btn" [class]="getOperatorClass('btn')" (click)="toggleAddZoneForm()">
+            <i class="fa fa-plus"></i>
+            <span class="btn-text">{{ showAddZoneForm ? 'Fermer' : 'Ajouter une zone' }}</span>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Filter bar -->
+    <div class="filter-bar">
+      <div class="search-box">
+        <i class="fa fa-search search-icon"></i>
+        <input
+          id="filter-label"
+          [(ngModel)]="filtredZone"
+          placeholder="Rechercher une zone..."
+          class="search-input" />
+      </div>
+      <div class="filter-stats">
+        <span class="stat-badge" [class]="getOperatorClass('badge')">
+          <i class="fa fa-map-pin"></i> {{ filteredZones.length }}
+        </span>
+      </div>
+    </div>
+
+    <!-- Zones Table -->
+    <div class="table-card">
+      <div class="table-wrapper">
+        <table class="modern-table">
+          <thead>
+          <tr>
+            <th data-label="Label"><i class="fa fa-tag"></i>Zone</th>
+            <th data-label="Description"><i class="fa fa-info-circle"></i> Description</th>
+            <th data-label="Sous-zones"><i class="fa fa-layer-group"></i> Sous-zones</th>
+            <th data-label="Actions" class="text-center"><i class="fa fa-cog"></i> Actions</th>
+          </tr>
+          </thead>
+          <tbody>
+          <tr *ngFor="let zone of paginatedZones" class="table-row">
+            <td data-label="Label" class="label-cell">
+              <div class="label-badge" [class]="getOperatorClass('label')">
+                <i class="fa fa-map-marker"></i> {{ zone.label }}
+              </div>
+            </td>
+            <td data-label="Description" class="description-cell">{{ zone.description || 'Aucune description' }}</td>
+            <td data-label="Sous-zones" class="description-cell">
+              <span class="badge" *ngIf="zone.sousZones.length > 0">
+                {{ zone.sousZones.length }} sous-zone(s)
+              </span>
+              <span class="text-muted" *ngIf="zone.sousZones.length === 0">
+                Aucune
+              </span>
+            </td>
+            <td data-label="Actions" class="actions-cell text-center">
+              <div class="action-buttons">
+                <button
+                  class="zone-btn-action views-zone-btn-small"
+                  *ngIf="zone.sousZones.length > 0"
+                  (click)="selectZone(zone)"
+                  title="Voir les sous-zones">
+                  <i class="fa fa-eye"></i>
+                </button>
+                <button
+                  class="zone-btn-action"
+                  [class]="getOperatorClass('zone-btn-action')"
+                  (click)="addClient(selectedOperator, selectedProjet, zone)"
+                  title="Ajouter client">
+                  <i class="fa fa-user-plus"></i>
+                </button>
+                <button
+                  class="zone-btn-action view-client-btn-small"
+                  (click)="toggleClientsModel(selectedOperator, selectedProjet,'zone', zone)"
+                  title="Voir les clients">
+                  <i class="fa fa-users"></i>
+                  <span class="client-count-badge" *ngIf="zone.clientsCount">
+                    {{ zone.clientsCount || 0 }}
+                  </span>
+                </button>
+                <button
+                  class="zone-btn-action delete-btn"
+                  (click)="deleteZone(zone.id)"
+                  title="Supprimer">
+                  <i class="fa fa-trash"></i>
+                </button>
+              </div>
+            </td>
+          </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Zones Pagination -->
+      <div class="pagination-zone" *ngIf="filteredZones.length > itemsPerPage">
+        <button (click)="prevPage('zone')" [disabled]="zonePage === 1">&laquo; Prev</button>
+        <span>Page {{ zonePage }} / {{ Math.ceil(filteredZones.length / itemsPerPage) }}</span>
+        <button (click)="nextPage('zone')" [disabled]="zonePage >= Math.ceil(filteredZones.length / itemsPerPage)">Next &raquo;</button>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- SOUS-ZONES VIEW -->
+  <div class="table-section" *ngIf="selectedOperator && selectedProjet && selectedZone && currentViewMode === 'souszone'">
+    <div class="section-header">
+      <div class="view-toggle">
+        <h3>
+          <i class="fa fa-layer-group"></i> Sous-zones de:
+          <span class="zone-name">{{ selectedZone.label }}</span>
+        </h3>
+        <div class="toggle-buttons">
+          <button class="btn submit-btn" [class]="getOperatorClass('btn')" (click)="toggleAddSousZoneForm()">
+            <i class="fa fa-plus"></i>
+            <span class="btn-text">{{ showAddSousZoneForm ? 'Fermer' : 'Ajouter une sous zone' }}</span>
+          </button>
+          <button class="btn back-btn" (click)="backToZones()">
+            <i class="fa fa-arrow-left"></i>
+            <span class="btn-text">Retour aux zones</span>
+          </button>
+
+        </div>
+      </div>
+    </div>
+
+    <!-- Zone Info Card -->
+    <div class="selected-item-card" *ngIf="selectedOperator && selectedProjet && selectedZone">
+      <div class="selected-item-header">
+        <h4><i class="fa fa-info-circle"></i> Zone Sélectionnée</h4>
+      </div>
+      <div class="selected-item-body">
+        <div class="item-detail">
+          <strong>Zone:</strong> {{ selectedZone.label }}
+        </div>
+        <div class="item-detail">
+          <strong>Description:</strong> {{ selectedZone.description || 'Aucune description' }}
+        </div>
+        <div class="item-detail">
+          <strong>Nombre de sous-zones:</strong> {{ selectedZone.sousZones.length }}
+        </div>
+      </div>
+    </div>
+
+    <!-- Sous-Zones Table -->
+    <div class="table-card" *ngIf="selectedOperator && selectedProjet && selectedZone">
+      <div class="table-wrapper">
+        <table class="modern-table">
+          <thead>
+          <tr>
+            <th data-label="Label"><i class="fa fa-tag"></i> Sous Zone</th>
+            <th data-label="Cités"><i class="fa fa-city"></i> Cités</th>
+            <th data-label="Actions" class="text-center"><i class="fa fa-cog"></i> Actions</th>
+          </tr>
+          </thead>
+          <tbody>
+          <tr *ngFor="let sousZone of paginatedSousZones" class="table-row">
+            <td data-label="Label" class="label-cell">
+              <div class="label-badge" [class]="getOperatorClass('label')">
+                <i class="fa fa-layer-group"></i> {{ sousZone.label }}
+              </div>
+            </td>
+            <td data-label="Cités" class="description-cell">
+              <span class="badge" *ngIf="sousZone.cites.length > 0">
+                {{ sousZone.cites.length }} cité(s)
+              </span>
+              <span class="text-muted" *ngIf="sousZone.cites.length === 0">
+                Aucune
+              </span>
+            </td>
+            <td data-label="Actions" class="actions-cell text-center">
+              <div class="action-buttons">
+                <button
+                  class="zone-btn-action views-zone-btn-small"
+                  *ngIf="sousZone.cites.length > 0"
+                  (click)="selectSousZone(sousZone)"
+                  title="Voir les cités">
+                  <i class="fa fa-eye"></i>
+                </button>
+                <button
+                  class="zone-btn-action"
+                  [class]="getOperatorClass('zone-btn-action')"
+                  (click)="addClient(selectedOperator, selectedProjet, selectedZone, sousZone)"
+                  title="Ajouter client">
+                  <i class="fa fa-user-plus"></i>
+                </button>
+                <button
+                  class="zone-btn-action view-client-btn-small"
+                  (click)="toggleClientsModel(selectedOperator, selectedProjet,'souszone', selectedZone, sousZone)"
+                  title="Voir les clients">
+                  <i class="fa fa-users"></i>
+                  <span class="client-count-badge" *ngIf="sousZone.clientsCount">
+                    {{ sousZone.clientsCount || 0 }}
+                  </span>
+                </button>
+                <button
+                  class="zone-btn-action delete-btn"
+                  (click)="deleteSousZone(sousZone.id)"
+                  title="Supprimer">
+                  <i class="fa fa-trash"></i>
+                </button>
+              </div>
+            </td>
+          </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Sous-Zones Pagination -->
+      <div class="pagination-zone" *ngIf="selectedZone && selectedZone.sousZones.length > itemsPerPage">
+        <button (click)="prevPage('sousZone')" [disabled]="sousZonePage === 1">&laquo; Prev</button>
+        <span>Page {{ sousZonePage }} / {{ Math.ceil(selectedZone.sousZones.length / itemsPerPage) }}</span>
+        <button (click)="nextPage('sousZone')" [disabled]="sousZonePage >= Math.ceil(selectedZone.sousZones.length / itemsPerPage)">Next &raquo;</button>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- CITES VIEW -->
+  <div class="table-section" *ngIf="selectedSousZone && currentViewMode === 'cite'">
+    <div class="section-header">
+      <div class="view-toggle">
+        <h3>
+          <i class="fa fa-city"></i> Cités de:
+          <span class="souszone-name">{{ selectedSousZone.label }}</span>
+        </h3>
+        <div class="toggle-buttons">
+          <button class="btn submit-btn" [class]="getOperatorClass('btn')" (click)="toggleAddCiteForm()">
+            <i class="fa fa-plus"></i>
+            <span class="btn-text">{{ showAddCiteForm ? 'Fermer' : 'Ajouter une cite' }}</span>
+          </button>
+          <button class="btn back-btn" (click)="backToSousZones()">
+            <i class="fa fa-arrow-left"></i>
+            <span class="btn-text">Retour aux sous-zones</span>
+          </button>
+
+        </div>
+      </div>
+    </div>
+
+    <!-- Sous-Zone Info Card -->
+    <div class="selected-item-card" *ngIf="selectedOperator && selectedProjet && selectedZone && selectedSousZone">
+      <div class="selected-item-header">
+        <h4><i class="fa fa-info-circle"></i> Sous-Zone Sélectionnée</h4>
+      </div>
+      <div class="selected-item-body">
+        <div class="item-detail">
+          <strong>Label:</strong> {{ selectedSousZone.label }}
+        </div>
+        <div class="item-detail">
+          <strong>Zone parente:</strong> {{ selectedZone.label }}
+        </div>
+        <div class="item-detail">
+          <strong>Nombre de cités:</strong> {{ selectedSousZone.cites.length }}
+        </div>
+      </div>
+    </div>
+
+    <!-- Cites Table -->
+    <div class="table-card" *ngIf="selectedOperator && selectedProjet && selectedZone && selectedSousZone">
+      <div class="table-wrapper">
+        <table class="modern-table">
+          <thead>
+          <tr>
+            <th data-label="Nom"><i class="fa fa-city"></i> Nom de la Cité</th>
+            <th data-label="Actions" class="text-center"><i class="fa fa-cog"></i> Actions</th>
+          </tr>
+          </thead>
+          <tbody>
+          <tr *ngFor="let cite of paginatedCites" class="table-row">
+            <td data-label="Nom" class="label-cell">
+              <div class="label-badge" [class]="getOperatorClass('label')">
+                <i class="fa fa-home"></i> {{ cite.nomCite }}
+              </div>
+            </td>
+            <td data-label="Actions" class="actions-cell text-center">
+              <div class="action-buttons">
+                <button
+                  class="zone-btn-action"
+                  [class]="getOperatorClass('zone-btn-action')"
+                  (click)="addClient(selectedOperator, selectedProjet, selectedZone, selectedSousZone, cite)"
+                  title="Ajouter client">
+                  <i class="fa fa-user-plus"></i>
+                </button>
+                <button
+                  class="zone-btn-action view-client-btn-small"
+                  (click)="toggleClientsModel(selectedOperator, selectedProjet,'cite', selectedZone, selectedSousZone, cite)"
+                  title="Voir les clients">
+                  <i class="fa fa-users"></i>
+                  <span class="client-count-badge" *ngIf="cite.clientsCount">
+                    {{ cite.clientsCount || 0 }}
+                  </span>
+                </button>
+              </div>
+            </td>
+          </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Cités Pagination -->
+      <div class="pagination-zone" *ngIf="selectedSousZone && selectedSousZone.cites.length > itemsPerPage">
+        <button (click)="prevPage('cite')" [disabled]="citePage === 1">&laquo; Prev</button>
+        <span>Page {{ citePage }} / {{ Math.ceil(selectedSousZone.cites.length / itemsPerPage) }}</span>
+        <button (click)="nextPage('cite')" [disabled]="citePage >= Math.ceil(selectedSousZone.cites.length / itemsPerPage)">Next &raquo;</button>
+      </div>
+
+    </div>
+  </div>
+
+
+  <!-- No Data States -->
+  <div class="empty-state" *ngIf="selectedOperator && filteredProjets.length === 0">
+    <div class="empty-state-content">
+      <i class="fa fa-folder-open empty-icon"></i>
+      <h3>Aucun projet trouvé</h3>
+      <p>Pas de projets disponibles pour {{ selectedOperator.nomOperateur }}</p>
+      <button class="btn" [class]="getOperatorClass('btn')" (click)="toggleAddProjet(selectedOperator)">
+        <i class="fa fa-plus"></i> <span class="btn-text">Ajouter un projet</span>
+      </button>
+    </div>
+  </div>
+
+  <div class="empty-state" *ngIf="selectedProjet && filteredZones.length === 0 && currentViewMode === 'zone'">
+    <div class="empty-state-content">
+      <i class="fa fa-map-marker empty-icon"></i>
+      <h3>Aucune zone trouvée</h3>
+      <p>Ce projet ne contient pas encore de zones</p>
+      <button class="btn" [class]="getOperatorClass('btn')" (click)="toggleAddZoneForm()">
+        <i class="fa fa-plus"></i> <span class="btn-text">Ajouter une zone</span>
+      </button>
+    </div>
+  </div>
+
+  <div class="empty-state" *ngIf="selectedOperator && selectedProjet && selectedZone && selectedZone.sousZones.length === 0 && currentViewMode === 'souszone'">
+    <div class="empty-state-content">
+      <i class="fa fa-layer-group empty-icon"></i>
+      <h3>Aucune sous-zone trouvée</h3>
+      <p>Cette zone ne contient pas encore de sous-zones</p>
+    </div>
+  </div>
+
+  <div class="empty-state" *ngIf="selectedSousZone && selectedSousZone.cites.length === 0 && currentViewMode === 'cite'">
+    <div class="empty-state-content">
+      <i class="fa fa-city empty-icon"></i>
+      <h3>Aucune cité trouvée</h3>
+      <p>Cette sous-zone ne contient pas encore de cités</p>
+    </div>
+  </div>
+
+  <div class="empty-state" *ngIf="!selectedOperator">
+    <div class="empty-state-content">
+      <i class="fa fa-hand-pointer empty-icon"></i>
+      <h3>Sélectionnez un opérateur</h3>
+      <p>Choisissez un opérateur pour voir ses projets</p>
+    </div>
+  </div>
+</div>
+
+<!-- Modals -->
+<div *ngIf="showAddOperatorModal" class="modal-overlay">
+  <div class="bg-white rounded-xl shadow-xl w-full max-w-lg p-6 relative">
+    <button class="absolute top-4 right-4 text-gray-500 hover:text-gray-700 text-xl"
+            (click)="toggleAddOperateurForm()">
+      <i class="fa fa-times"></i>
+    </button>
+    <h3 class="text-xl font-semibold mb-4">Ajouter un Operateur</h3>
+    <app-add-operateur
+      (refresh)="loadZonesAndProjets()"
+      (close)="toggleAddOperateurForm()">
+    </app-add-operateur>
+  </div>
+</div>
+
+<div *ngIf="showAddProjetModal" class="modal-overlay">
+  <div class="bg-white rounded-xl shadow-xl w-full max-w-lg p-6 relative">
+    <button class="absolute top-4 right-4 text-gray-500 hover:text-gray-700 text-xl"
+            (click)="showAddProjetModal = false">
+      <i class="fa fa-times"></i>
+    </button>
+    <h3 class="text-xl font-semibold mb-4">Ajouter un Projet</h3>
+    <app-add-project
+      [operateur]="selectedOperator"
+      (refresh)="loadZonesAndProjets()"
+      (close)="showAddProjetModal = false">
+    </app-add-project>
+  </div>
+</div>
+
+<div *ngIf="showAddZoneForm">
+  <app-add-zone
+    [projet]="selectedProjet"
+    [operateur]="selectedOperator"
+    (refresh)="loadZonesAndProjets()"
+    (close)="toggleAddZoneForm()">
+  </app-add-zone>
+</div>
+<div *ngIf="showAddSousZoneForm">
+  <app-add-souszone
+    [projet]="selectedProjet"
+    [operateur]="selectedOperator"
+    [selectedZone]="selectedZone"
+    (refresh)="loadZonesAndProjets()"
+    (close)="toggleAddSousZoneForm()">
+  </app-add-souszone>
+</div>
+<div *ngIf="showAddCiteForm">
+  <app-add-cite
+    [projet]="selectedProjet"
+    [operateur]="selectedOperator"
+    [selectedZone]="selectedZone"
+    [selectedSousZone]="selectedSousZone"
+    (refresh)="loadZonesAndProjets()"
+    (close)="toggleAddCiteForm()">
+  </app-add-cite>
+</div>
+<!-- Updated Client Modal - pass zoneId and sousZoneId safely -->
+<div *ngIf="showAddClientModel">
+  <app-add-client
+    [zone]="clientZone"
+    [sousZone]="clientSousZone"
+    [cite]="clientCite"
+    [projet]="clientProjet"
+    [operateur]="clientOperateur"
+    (close)="onAddClient()"
+    (refresh)="loadZonesAndProjets()">
+  </app-add-client>
+</div>
+
+<div *ngIf="showClientModel" >
+  <app-client
+    [zone]="clientZone"
+    [sousZone]="clientSousZone"
+    [cite]="clientCite"
+    [projet]="clientProjet"
+    [operateur]="clientOperateur"
+    [param] = "param"
+    (close)="showClientModel = false"
+    (refresh)="loadZonesAndProjets()">>
+  </app-client>
+</div>
+
+<div *ngIf="showAddClientsOoredooModel">
+  <app-add-clients-ooredoo
+    [projet]="clientProjet"
+    [operateur]="clientOperateur"
+    (close)="onAddClientsOoredooClose()"
+    (refresh)="onRefreshAfterOoredooAdd()">
+  </app-add-clients-ooredoo>
+</div>
+
+
+
+
+<div *ngIf="showPreviewModal && selectedProjet" class="modal-overlay">
+  <div class="modal-large preview-modal" [ngClass]="getThemeClass()">
+
+    <!-- HEADER -->
+    <div class="preview-header">
+      <h3>
+        <i class="fa fa-eye"></i>
+        Preview Export
+      </h3>
+
+      <button class="modal-close" (click)="showPreviewModal = false">
+        ✕
+      </button>
+    </div>
+
+    <!-- INFO -->
+    <div class="preview-info">
+      <span class="badge">
+        {{ previewData.length }} abonnés
+      </span>
+      <span class="badge">
+        Projet: {{ selectedProjet.nomProjet }}
+      </span>
+    </div>
+
+    <!-- TABLE -->
+    <div class="preview-table-wrapper">
+      <table class="preview-table">
+
+        <thead>
+        <tr>
+          <th>Cas CRM</th>
+          <th>ZONE</th>
+          <th>RESIDENCE</th>
+          <th>ABONNES</th>
+          <th>S/N ONT</th>
+          <th>Numéro</th>
+          <th>Équipe</th>
+          <th>Date RDV</th>
+          <th>Chef équipe</th>
+          <th>Techniciens</th>
+          <th>SN Box</th>
+        </tr>
+        </thead>
+
+        <tbody>
+        <tr *ngFor="let row of previewData">
+          <td>{{ row.label }}</td>
+          <td>{{ row.zoneLabel }}</td>
+          <td class="cell-ellipsis">{{ row.adresse }}</td>
+          <td>{{ row.nomClient }}</td>
+          <td>{{ row.snont }}</td>
+          <td>{{ row.msisdn }}</td>
+          <td>{{ row.equipe }}</td>
+          <td>{{ row.dateRDV }}</td>
+          <td>{{ row.chefEquipe }}</td>
+          <td>{{ row.techniciens }}</td>
+          <td>{{ row.snBox }}</td>
+        </tr>
+        </tbody>
+
+      </table>
+    </div>
+
+    <!-- ACTIONS -->
+    <div class="preview-actions">
+      <button class="btn submit-btn" (click)="confirmExport(selectedProjet)">
+        <i class="fa fa-file-excel"></i> Export Excel
+      </button>
+
+      <button class="btn" (click)="showPreviewModal = false">
+        Cancel
+      </button>
+    </div>
+
+  </div>
+</div>

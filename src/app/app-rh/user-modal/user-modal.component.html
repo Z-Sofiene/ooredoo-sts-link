@@ -1,0 +1,197 @@
+<!-- Modal Backdrop -->
+<div class="modal-backdrop">
+  <div class="modal-card">
+
+    <!-- Header -->
+    <div class="modal-header">
+      <h3 class="modal-title">
+        <i class="fas" [ngClass]="{
+              'fa-plus-circle text-blue-600': mode === 'add',
+              'fa-edit text-yellow-600': mode === 'edit',
+              'fa-eye text-green-600': mode === 'view'
+            }"></i>
+
+        {{ mode === 'add' ? 'Add' : mode === 'edit' ? 'Edit' : 'User Info' }}
+        {{ userType | titlecase }}
+      </h3>
+
+      <button (click)="toggleClose()" class="close-btn">
+        <i class="fas fa-times"></i>
+      </button>
+    </div>
+
+    <!-- Switch User Type (only for add mode) -->
+    <div class="type-switch" *ngIf="mode === 'add'">
+      <button *ngFor="let type of userTypes"
+              (click)="userType = type"
+              [class.bg-blue-600]="userType === type"
+              [class.text-white]="userType === type"
+              class="submit-btn type-btn">
+        {{ type | titlecase }}
+      </button>
+    </div>
+
+    <!-- Form -->
+    <div>
+
+      <div class="form-group">
+        <label>Last Name</label>
+        <input type="text"
+               [(ngModel)]="userForm.nom"
+               name="nom"
+               required
+               class="form-input"
+               [disabled]="mode === 'view'" />
+        <i class="fas fa-user form-icon"></i>
+      </div>
+
+      <div class="form-group">
+        <label>First Name</label>
+        <input type="text"
+               [(ngModel)]="userForm.prenom"
+               name="prenom"
+               required
+               class="form-input"
+               [disabled]="mode === 'view'" />
+        <i class="fas fa-user-circle form-icon"></i>
+      </div>
+
+      <div class="form-group">
+        <label>Email</label>
+        <input type="email"
+               [(ngModel)]="userForm.email"
+               name="email"
+               required
+               class="form-input"
+               [disabled]="mode === 'view'" />
+        <i class="fas fa-envelope form-icon"></i>
+      </div>
+
+      <div class="form-group">
+        <label>Phone</label>
+        <input type="text"
+               [(ngModel)]="userForm.telephone"
+               name="telephone"
+               required
+               class="form-input"
+               [disabled]="mode === 'view'" />
+        <i class="fas fa-phone form-icon"></i>
+      </div>
+      <!-- Soutraitance Selection -->
+      <div class="form-group"
+           *ngIf="userType === 'technicien' || userType === 'chef equipe'">
+
+        <label>Soutraitance <span class="required">*</span></label>
+
+        <div class="type-select-container">
+
+          <select class="form-control"
+                  [(ngModel)]="selectedSoutraitanceId"
+                  name="soutraitance"
+                  required>
+
+            <option [ngValue]="0">-- Choisir une soutraitance --</option>
+
+            <option *ngFor="let s of soutraitances"
+                    [ngValue]="s.id">
+              {{ s.label }}
+            </option>
+          </select>
+
+          <button type="button"
+                  class="btn btn-sm btn-primary ml-2"
+                  (click)="showSoutraitanceModal = true">
+            <i class="fas fa-plus"></i>
+          </button>
+
+          <button type="button"
+                  class="btn btn-sm btn-danger ml-2"
+                  (click)="showDeleteSoutraitanceModal = true">
+            <i class="fas fa-trash"></i>
+          </button>
+
+        </div>
+      </div>
+
+
+      <!-- Buttons -->
+      <div class="actions-row">
+        <button class="cancel-btn" (click)="toggleClose()">
+          <i class="fas fa-times"></i>
+          {{ mode === 'view' ? 'Close' : 'Cancel' }}
+        </button>
+
+        <button *ngIf="mode !== 'view'"
+                type="button"
+                class="submit-btn submit-main"
+                (click)="submitUser()">
+          <i class="fas fa-check"></i>
+          {{ mode === 'add' ? 'Add' : 'Update' }} {{ userType | titlecase }}
+        </button>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<div *ngIf="showSoutraitanceModal"
+     class="fixed inset-0 flex items-center justify-center z-50 bg-black bg-opacity-50">
+
+  <div class="bg-white rounded-xl shadow-xl w-full max-w-md p-6 relative">
+
+    <button type="button"
+            class="absolute top-4 right-4 text-gray-500 text-xl"
+            (click)="showSoutraitanceModal = false">
+      <i class="fa fa-times"></i>
+    </button>
+
+    <h3 class="text-xl font-semibold mb-4">Ajouter une Soutraitance</h3>
+
+    <form (ngSubmit)="addNewSoutraitance()">
+      <div class="form-group">
+        <label>Label</label>
+        <input type="text"
+               class="form-control"
+               [(ngModel)]="newSoutraitance.label"
+               name="label"
+               required>
+      </div>
+
+      <button type="submit" class="submit-btn mt-2">
+        Ajouter
+      </button>
+    </form>
+
+  </div>
+</div>
+<div *ngIf="showDeleteSoutraitanceModal"
+     class="fixed inset-0 flex items-center justify-center z-50 bg-black bg-opacity-50">
+
+  <div class="bg-white rounded-xl shadow-xl w-full max-w-md p-6 relative">
+
+    <button type="button"
+            class="absolute top-4 right-4 text-gray-500 text-xl"
+            (click)="showDeleteSoutraitanceModal = false">
+      <i class="fa fa-times"></i>
+    </button>
+
+    <h3 class="text-xl font-semibold mb-4">Gérer les Soutraitances</h3>
+
+    <ul>
+      <li *ngFor="let s of soutraitances"
+          class="flex justify-between items-center mb-2">
+
+        {{ s.label }}
+
+        <button type="button"
+                class="btn btn-danger btn-sm"
+                (click)="deleteSoutraitance(s, $event)">
+          <i class="fas fa-trash"></i>
+        </button>
+
+      </li>
+    </ul>
+
+  </div>
+</div>
+

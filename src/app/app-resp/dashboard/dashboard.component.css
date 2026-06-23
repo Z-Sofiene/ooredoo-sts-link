@@ -1,0 +1,284 @@
+/* Main Body & Background Shapes */
+.main-body {
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  background: linear-gradient(135deg, rgb(231 233 234 / 15%) 0%, rgb(243 240 248 / 10%) 100%);
+  min-height: 100vh;
+  padding: clamp(16px, 3vw, 50px); /* Fixed: Responsive padding */
+  position: relative;
+  overflow-x: hidden;
+  color: #334155;
+}
+
+.container {
+  max-width: 1600px;
+  margin: 0 auto;
+  background: rgb(255 255 255 / 85%);
+  border-radius: clamp(12px, 2vw, 20px); /* Fixed: Responsive border radius */
+  backdrop-filter: blur(15px);
+  box-shadow: 0 15px 35px rgb(0 0 0 / 10%);
+  border: 1px solid rgb(255 255 255 / 30%);
+  overflow: hidden;
+  animation: fadeIn 0.8s ease-out;
+}
+
+/* En-tête */
+.header-body {
+  padding: clamp(16px, 2vw, 25px) clamp(16px, 2vw, 30px); /* Fixed: Responsive padding */
+  background: rgb(59 130 246 / 10%);
+  border-bottom: 1px solid rgb(226 232 240 / 80%);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 16px; /* Added gap for better mobile spacing */
+  margin-bottom: clamp(24px, 3vw, 50px); /* Fixed: Responsive margin */
+}
+
+.header-body h1 {
+  font-size: clamp(20px, 4vw, 28px); /* Fixed: Responsive font size */
+  font-weight: 700;
+  background: linear-gradient(135deg, #1e293b, #3b82f6);
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  margin: 0; /* Added to prevent extra spacing */
+}
+
+.dashboard-card {
+  background: rgb(255 255 255 / 90%);
+  border-radius: clamp(12px, 2vw, 20px); /* Fixed: Responsive border radius */
+  padding: clamp(16px, 2vw, 25px); /* Fixed: Responsive padding */
+  box-shadow: 0 12px 30px rgb(0 0 0 / 10%);
+  backdrop-filter: blur(15px);
+  display: flex;
+  flex-direction: column;
+  gap: clamp(1rem, 2vw, 2rem); /* Fixed: Responsive gap */
+}
+
+/* Summary Cards */
+.summary-cards {
+  padding: clamp(16px, 2vw, 20px) clamp(16px, 2vw, 30px); /* Fixed: Responsive padding */
+  background: rgb(255 255 255 / 70%);
+  border-bottom: 1px solid rgb(226 232 240 / 80%);
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); /* Fixed: Smaller minmax for mobile */
+  gap: clamp(12px, 2vw, 20px); /* Fixed: Responsive gap */
+  margin-top: clamp(24px, 3vw, 90px); /* Fixed: Responsive margin */
+}
+
+.summary-card {
+  background: #3b82f6;
+  color: #fff;
+  padding: clamp(16px, 2vw, 20px); /* Fixed: Responsive padding */
+  border-radius: clamp(8px, 1.5vw, 12px); /* Fixed: Responsive border radius */
+  display: flex;
+  flex-direction: column;
+  text-align: center;
+  font-weight: bold;
+  box-shadow: 0 4px 12px rgb(0 0 0 / 10%);
+  transition: transform 0.2s ease;
+  min-height: 100px; /* Ensure consistent height on mobile */
+}
+
+.summary-card:hover {
+  transform: translateY(-5px);
+}
+
+.summary-card h3 {
+  font-size: clamp(14px, 2.5vw, 16px); /* Fixed: Responsive font size */
+  margin-bottom: 8px;
+  line-height: 1.3;
+}
+
+.summary-card p {
+  font-size: clamp(20px, 4vw, 28px); /* Fixed: Responsive font size */
+  margin: 0;
+  font-weight: 700;
+}
+
+/* Charts Card */
+.charts-card {
+  background: #fff;
+  padding: clamp(16px, 2vw, 25px); /* Fixed: Responsive padding */
+  border-radius: clamp(10px, 2vw, 15px); /* Fixed: Responsive border radius */
+  box-shadow: 0 8px 25px rgb(0 0 0 / 8%);
+  margin: clamp(16px, 2vw, 25px); /* Added margin for spacing */
+}
+
+.charts-card h2 {
+  margin-bottom: clamp(12px, 2vw, 20px); /* Fixed: Responsive margin */
+  font-size: clamp(18px, 3.5vw, 24px); /* Fixed: Responsive font size */
+  color: #1e293b;
+  text-align: center;
+}
+
+/* Charts Grid */
+.charts-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); /* Fixed: Smaller minmax for mobile */
+  gap: clamp(1rem, 2vw, 2rem); /* Fixed: Responsive gap */
+}
+
+.chart-card {
+  background: #f8fafc;
+  padding: clamp(12px, 2vw, 20px); /* Fixed: Responsive padding */
+  border-radius: clamp(8px, 1.5vw, 12px); /* Fixed: Responsive border radius */
+  box-shadow: 0 4px 12px rgb(0 0 0 / 5%);
+  text-align: center;
+  min-height: 280px; /* Ensure charts have enough space */
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.chart-card h3 {
+  margin-bottom: clamp(8px, 1.5vw, 15px); /* Fixed: Responsive margin */
+  font-size: clamp(14px, 2.5vw, 18px); /* Fixed: Responsive font size */
+  color: #334155;
+  line-height: 1.3;
+}
+
+/* Chart canvas responsive sizing */
+.chart-card canvas {
+  width: 100% !important;
+  height: auto !important;
+  max-height: 200px; /* Prevent charts from becoming too tall */
+}
+
+/* Animations */
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* =======================
+   ENHANCED RESPONSIVE BREAKPOINTS
+======================= */
+@media (width <= 1024px) {
+  .container {
+    margin: 0 clamp(8px, 2vw, 16px); /* Responsive margin */
+  }
+
+  .charts-grid {
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  }
+}
+
+@media (width <= 768px) {
+  .main-body {
+    padding: 12px; /* Smaller padding on mobile */
+  }
+
+  .header-body {
+    flex-direction: column;
+    align-items: flex-start;
+    text-align: center;
+    padding: 16px;
+  }
+
+  .header-body h1 {
+    width: 100%;
+    text-align: center;
+  }
+
+  .charts-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .summary-cards {
+    grid-template-columns: repeat(2, 1fr); /* 2 columns on tablet */
+    margin-top: 32px;
+  }
+
+  .chart-card {
+    min-height: 240px; /* Smaller charts on mobile */
+  }
+
+  .chart-card canvas {
+    max-height: 180px;
+  }
+}
+
+@media (width <= 480px) {
+  .main-body {
+    padding: 8px; /* Minimal padding on very small screens */
+  }
+
+  .container {
+    border-radius: 10px; /* Smaller border radius */
+  }
+
+  .summary-cards {
+    grid-template-columns: 1fr; /* 1 column on mobile */
+    gap: 12px;
+    margin-top: 24px;
+  }
+
+  .summary-card {
+    min-height: 80px; /* Smaller cards on mobile */
+    padding: 12px;
+  }
+
+  .charts-card {
+    margin: 12px 0;
+    padding: 16px;
+  }
+
+  .chart-card {
+    padding: 12px;
+    min-height: 220px;
+  }
+
+  .chart-card canvas {
+    max-height: 160px;
+  }
+
+  /* Prevent text from becoming too small */
+  .summary-card h3 {
+    font-size: 14px;
+  }
+
+  .summary-card p {
+    font-size: 20px;
+  }
+
+  .charts-card h2 {
+    font-size: 18px;
+  }
+
+  .chart-card h3 {
+    font-size: 14px;
+  }
+}
+
+/* Viewport meta tag reminder - Add this to your HTML head if not present */
+
+/*
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+*/
+
+/* Prevent horizontal overflow on mobile */
+@media (width <= 768px) {
+  .main-body,
+  .container,
+  .charts-card,
+  .chart-card {
+    overflow-x: hidden;
+  }
+
+  /* Ensure content doesn't exceed viewport width */
+  * {
+    max-width: 100%;
+  }
+}

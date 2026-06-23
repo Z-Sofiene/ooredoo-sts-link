@@ -1,0 +1,216 @@
+<div class="modal-overlay" (click)="close.emit()">
+  <div class="modal-container" [class]="getThemeClass()" (click)="$event.stopPropagation()">
+
+    <!-- HEADER -->
+    <div class="modal-header">
+      <h2>📋 Détails Raccordement</h2>
+      <div class="operator-badge" *ngIf="operateur">
+        {{ operateur.nomOperateur }}
+      </div>
+      <div class="actions">
+        <button (click)="exportToPDF()">📄 Export PDF</button>
+        <button (click)="close.emit()">❌</button>
+      </div>
+    </div>
+
+    <!-- LOADING -->
+    <div *ngIf="loading" class="loading">
+      Chargement...
+    </div>
+
+    <!-- ERROR -->
+    <div *ngIf="error" class="error">
+      {{ error }}
+    </div>
+
+    <!-- CONTENT -->
+    <div *ngIf="clientRaccordement" id="pdf-content">
+      <div class="context-section">
+        <div class="context-grid">
+          <div class="context-item">
+            <span class="context-label">Opérateur</span>
+            <span class="context-value operator-value" [title]="operateur?.nomOperateur || 'Non spécifié'">
+            {{ operateur?.nomOperateur || 'Non spécifié' }}
+          </span>
+          </div>
+          <div class="context-item">
+            <span class="context-label">Projet</span>
+            <span class="context-value" [title]="projet?.nomProjet || 'Non spécifié'">
+            {{ projet?.nomProjet || 'Non spécifié' }}
+          </span>
+          </div>
+          <div class="context-item">
+            <span class="context-label">Zone</span>
+            <span class="context-value" [title]="zone?.label || 'Non spécifiée'">
+            {{ zone?.label || 'Non spécifiée' }}
+          </span>
+          </div>
+          <div class="context-item" *ngIf="sousZone">
+            <span class="context-label">Sous-Zone</span>
+            <span class="context-value" [title]="sousZone.label">
+            {{ sousZone.label }}
+          </span>
+          </div>
+          <div class="context-item" *ngIf="cite">
+            <span class="context-label">Cité</span>
+            <span class="context-value" [title]="cite.nomCite">
+            {{ cite.nomCite }}
+          </span>
+          </div>
+        </div>
+      </div>
+      <!-- ================= CLIENT ================= -->
+      <div class="card section">
+        <h3>👤 Client</h3>
+
+        <div class="grid-2">
+          <div><strong>Nom:</strong> {{ clientRaccordement.nomClient }}</div>
+          <div><strong>Téléphone:</strong> {{ clientRaccordement.numTelephone }}</div>
+
+          <div><strong>Adresse:</strong> {{ clientRaccordement.adresseClient }}</div>
+          <div><strong>Fixe:</strong> {{ clientRaccordement.numFixe }}</div>
+
+          <div><strong>Date RDV:</strong> {{ clientRaccordement.dateRDV }}</div>
+          <div><strong>Heure:</strong> {{ clientRaccordement.heureRDV }}</div>
+
+          <div><strong>Coordonnées Client:</strong>
+            <br>{{ clientRaccordement.latitudeClient }}, {{ clientRaccordement.longitudeClient }}
+          </div>
+          <div><strong>Coordonnées Raccordement:</strong>
+            <br>{{ clientRaccordement.latitude }}, {{ clientRaccordement.longitude }}
+          </div>
+        </div>
+      </div>
+
+      <!-- ================= RACCORDEMENT ================= -->
+      <div class="card section">
+        <h3>📡 Raccordement</h3>
+
+        <div class="grid-2">
+          <div><strong>Type:</strong> {{ clientRaccordement.typeRaccordement }}</div>
+          <div><strong>État:</strong> {{ clientRaccordement.etatRaccordement }}</div>
+
+          <div><strong>Responsable:</strong> {{ clientRaccordement.responsable }}</div>
+          <div><strong>Chef équipe:</strong> {{ clientRaccordement.chef_equipe }}</div>
+
+          <div><strong>Débit:</strong> {{ clientRaccordement.debit }}</div>
+          <div><strong>Test Débit:</strong> {{ clientRaccordement.testDebit }}</div>
+
+          <div><strong>Puissance:</strong> {{ clientRaccordement.puissance }}</div>
+          <div><strong>SNONT:</strong> {{ clientRaccordement.snont }}</div>
+
+          <div><strong>Atténuation:</strong> {{ clientRaccordement.attenuation }} dB</div>
+
+          <div><strong>Distance Travaux:</strong> {{ clientRaccordement.distance_travaux }} m</div>
+          <div><strong>Distance Totale:</strong> {{ clientRaccordement.distance_total }} m</div>
+
+          <div><strong>Brin:</strong> {{ clientRaccordement.brinBranchement }}</div>
+
+          <div>
+            <strong>Bridge:</strong>
+            <span [ngClass]="clientRaccordement.hasBridge ? 'ok' : 'no'">
+              {{ clientRaccordement.hasBridge ? 'Oui' : 'Non' }}
+            </span>
+          </div>
+        </div>
+      </div>
+
+      <!-- ================= DESCRIPTION ================= -->
+      <div class="card section">
+        <h3>📝 Description</h3>
+        <p>{{ clientRaccordement.description }}</p>
+      </div>
+
+      <!-- ================= TASKS ================= -->
+      <div class="card section">
+        <h3>🛠️ Tâches</h3>
+
+        <div *ngFor="let tache of taches" class="task-card">
+
+          <h4>{{ tache.titre }}</h4>
+
+          <p>{{ tache.description }}</p>
+
+          <div class="grid-2">
+            <div>
+              <strong>État:</strong>
+              <span [ngClass]="getStatusClass(tache.etat)">
+                {{ tache.etat }}
+              </span>
+            </div>
+
+            <div><strong>Technicien:</strong> {{ tache.nom_technicien || 'N/A' }}</div>
+
+            <div><strong>Créé le:</strong> {{ formatDate(tache.createAt) }}</div>
+            <div><strong>Mis à jour:</strong> {{ formatDate(tache.updatedAt) }}</div>
+          </div>
+
+          <!-- PRODUITS -->
+          <div *ngIf="tache.produits?.length" class="sub-section">
+            <h5>🧰 Produits</h5>
+
+            <div *ngFor="let p of tache.produits" class="product-line">
+              <span>{{ p.produit.nomArticle }}</span>
+              <span>x{{ p.quantite }}</span>
+              <span>{{ p.produit.unite }}</span>
+            </div>
+
+            <div class="total">
+              Total: {{ getTotalProducts(tache) }}
+            </div>
+          </div>
+
+          <!-- IMAGES -->
+          <!-- Images section in tasks -->
+          <div *ngIf="tache.images?.length" class="sub-section">
+            <h5>📷 Images</h5>
+            <div class="image-grid">
+              <img
+                *ngFor="let img of tache.images; let idx = index"
+                [src]="getImageUrl(img.image)"
+                (error)="handleImageError($event, img)"
+                (click)="openImageViewer(tache.images, $event, idx)"
+                class="task-img"
+                style="cursor: pointer;" />
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+<!-- Image Viewer Modal -->
+<div *ngIf="showImageViewer" class="image-viewer-overlay" (click)="closeImageViewer()">
+  <div class="image-viewer-container" (click)="$event.stopPropagation()">
+    <button class="image-viewer-close" (click)="closeImageViewer()">✕</button>
+
+    <button
+      class="image-viewer-nav image-viewer-prev"
+      (click)="prevImage()"
+      [class.disabled]="currentImageIndex === 0">
+      ❮
+    </button>
+
+    <div class="image-viewer-content">
+      <img
+        *ngIf="currentImage"
+        [src]="getImageUrl(currentImage.image)"
+        [alt]="'Image ' + (currentImageIndex + 1)"
+        (error)="handleImageViewerError($event)"
+        class="image-viewer-img" />
+    </div>
+
+    <button
+      class="image-viewer-nav image-viewer-next"
+      (click)="nextImage()"
+      [class.disabled]="currentImageIndex === currentImages.length - 1">
+      ❯
+    </button>
+
+    <div class="image-viewer-counter" *ngIf="currentImages.length > 0">
+      {{ currentImageIndex + 1 }} / {{ currentImages.length }}
+    </div>
+  </div>
+</div>

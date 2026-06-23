@@ -1,0 +1,206 @@
+<div class="login-page-container">
+  <div class="login-body">
+    <div class="bubbles">
+      <div class="bubble"></div>
+      <div class="bubble"></div>
+      <div class="bubble"></div>
+      <div class="bubble"></div>
+      <div class="bubble"></div>
+      <div class="bubble"></div>
+      <div class="bubble"></div>
+      <div class="bubble"></div>
+      <div class="bubble"></div>
+      <div class="bubble"></div>
+      <div class="bubble"></div>
+    </div>
+
+    <div class="login-card">
+      <!-- Logo Section -->
+      <div class="text-center mb-10">
+        <div class="flex items-center justify-center mb-4">
+          <div class="logo-container">
+            <img
+              [ngSrc]="'/stslogo.png'"
+              alt="STSGroupe Logo"
+              class="dashboard-logo"
+              height="70" width="400"
+              priority/>
+
+          </div>
+        </div>
+        <p class="text-gray-600 text-sm sm:text-base font-medium uppercase tracking-wide">
+          Système de Gestion des Installations Fibre Optique
+        </p>
+      </div>
+
+      <!-- Login Type Toggle -->
+      <div class="login-type-toggle mb-8">
+        <div class="toggle-container">
+          <span class="toggle-label" [class.active]="!isChefTechMode">
+            <i class="icon-shield" style="margin-right: 8px;"></i>
+            Admin / Responsable
+          </span>
+
+          <label class="toggle-switch">
+            <input
+              type="checkbox"
+              [(ngModel)]="isChefTechMode"
+              name="loginTypeToggle"
+              (change)="onToggleChange()"
+            />
+            <span class="toggle-slider">
+              <span class="toggle-icon toggle-icon-left">🛡️</span>
+              <span class="toggle-icon toggle-icon-right">🔧</span>
+            </span>
+          </label>
+
+          <span class="toggle-label" [class.active]="isChefTechMode">
+            <i class="icon-tools" style="margin-right: 8px;"></i>
+            Chef / Technicien
+          </span>
+        </div>
+
+        <div class="toggle-description" [ngStyle]="{'--desc-opacity': isChefTechMode ? 0.5 : 0.3}">
+          <span *ngIf="!isChefTechMode">
+            <i class="icon-shield"></i>
+            <strong>Interface</strong> • Administration & Chefs des projets
+          </span>
+          <span *ngIf="isChefTechMode">
+            <i class="icon-tools"></i>
+            <strong>Interface</strong> • Chefs des equipes & Techniciens
+          </span>
+        </div>
+      </div>
+
+      <!-- Login Form -->
+      <form #f="ngForm" (ngSubmit)="isChefTechMode ? loginChefTechnicien(f.value) : login(f.value)">
+        <div class="mb-4">
+          <input
+            type="text"
+            name="username"
+            ngModel
+            required
+            placeholder="Nom d'utilisateur"
+            class="form-input-login"
+          />
+        </div>
+
+        <div class="mb-4">
+          <input
+            type="password"
+            name="password"
+            ngModel
+            required
+            placeholder="Mot de passe"
+            class="form-input-login"
+          />
+        </div>
+
+        <div *ngIf="errorMessage" class="error-message">
+          {{ errorMessage }}
+        </div>
+
+        <button
+          type="submit"
+          [disabled]="isLoading"
+          class="login-btn"
+        >
+          <span *ngIf="!isLoading">
+            {{ isChefTechMode ? 'Connexion Équipe' : 'Se connecter' }}
+          </span>
+          <div *ngIf="isLoading" class="spinner"></div>
+          <span *ngIf="isLoading">
+            {{ isChefTechMode ? 'Connexion...' : 'Connexion...' }}
+          </span>
+        </button>
+      </form>
+
+      <div class="user-actions">
+
+        <button class="btn btn-outline" (click)="openFeedbackDialog()">
+          <i class="btn-icon">✉️</i>
+          Envoyer un message
+        </button>
+
+        <button
+          class="btn btn-outline"
+          (click)="toggleForgotPasswordDialog()"
+        >
+          <i class="btn-icon">🔒</i>
+          Mot de passe oublié
+        </button>
+
+      </div>
+
+
+      <!-- Footer -->
+      <p class="footer-text">
+        &copy; 2026 STSGroupe. Tous droits réservés.
+      </p>
+    </div>
+
+    <!-- Mots de passe Oublié -->
+    <div *ngIf="showForgotPasswordDialog">
+      <app-forget-password
+        (close)="showForgotPasswordDialog = false">
+      </app-forget-password>
+    </div>
+
+    <!-- Dialog Overlay -->
+    <div class="dialog-overlay" *ngIf="showFeedbackDialog">
+      <div class="dialog-container glassmorphism">
+        <div class="dialog-header">
+          <h2>Envoyer un Message</h2>
+          <button class="dialog-close" (click)="closeFeedbackDialog()">×</button>
+        </div>
+
+        <div class="dialog-content">
+          <div class="form-group">
+            <label>Sujet</label>
+            <select class="form-input-login" [(ngModel)]="feedback.type">
+              <option value="message">Message général</option>
+              <option value="problem">Problème technique</option>
+              <option value="suggestion">Suggestion</option>
+              <option value="complain">Plainte</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label>Sujet (facultatif)</label>
+            <input
+              type="text"
+              class="form-input-login"
+              placeholder="Titre de votre message"
+              [(ngModel)]="feedback.subject"
+            >
+          </div>
+
+          <div class="form-group">
+            <label>Message</label>
+            <textarea
+              class="form-input-login textarea"
+              rows="5"
+              placeholder="Décrivez votre message, problème ou suggestion..."
+              [(ngModel)]="feedback.message"
+              required
+            ></textarea>
+          </div>
+        </div>
+
+        <div class="dialog-actions">
+          <button class="btn btn-outline" (click)="closeFeedbackDialog()">Annuler</button>
+          <button
+            class="btn btn-primary"
+            [disabled]="!feedback.message.trim() || isLoading"
+          >
+            <span *ngIf="!isLoading">Envoyer</span>
+            <span *ngIf="isLoading">Envoi en cours...</span>
+          </button>
+        </div>
+      </div>
+    </div>
+
+
+
+  </div>
+</div>

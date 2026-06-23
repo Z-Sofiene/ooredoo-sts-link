@@ -1,0 +1,272 @@
+{
+  "auditReportVersion": 2,
+  "vulnerabilities": {
+    "@angular-devkit/build-angular": {
+      "name": "@angular-devkit/build-angular",
+      "severity": "moderate",
+      "isDirect": true,
+      "via": [
+        "@angular/build",
+        "esbuild"
+      ],
+      "effects": [],
+      "range": "12.2.0-next.0 - 19.2.0-rc.0",
+      "nodes": [
+        "node_modules/@angular-devkit/build-angular"
+      ],
+      "fixAvailable": {
+        "name": "@angular-devkit/build-angular",
+        "version": "20.2.2",
+        "isSemVerMajor": true
+      }
+    },
+    "@angular/build": {
+      "name": "@angular/build",
+      "severity": "moderate",
+      "isDirect": false,
+      "via": [
+        "@vitejs/plugin-basic-ssl",
+        "esbuild",
+        "vite"
+      ],
+      "effects": [
+        "@angular-devkit/build-angular"
+      ],
+      "range": "<=19.2.0",
+      "nodes": [
+        "node_modules/@angular/build"
+      ],
+      "fixAvailable": {
+        "name": "@angular-devkit/build-angular",
+        "version": "20.2.2",
+        "isSemVerMajor": true
+      }
+    },
+    "@angular/cli": {
+      "name": "@angular/cli",
+      "severity": "low",
+      "isDirect": true,
+      "via": [
+        "@inquirer/prompts",
+        "@listr2/prompt-adapter-inquirer"
+      ],
+      "effects": [],
+      "range": "18.1.0-next.0 - 19.0.0-rc.3",
+      "nodes": [
+        "node_modules/@angular/cli"
+      ],
+      "fixAvailable": {
+        "name": "@angular/cli",
+        "version": "20.2.2",
+        "isSemVerMajor": true
+      }
+    },
+    "@inquirer/editor": {
+      "name": "@inquirer/editor",
+      "severity": "low",
+      "isDirect": false,
+      "via": [
+        "external-editor"
+      ],
+      "effects": [
+        "@inquirer/prompts"
+      ],
+      "range": "<=4.2.15",
+      "nodes": [
+        "node_modules/@inquirer/editor"
+      ],
+      "fixAvailable": {
+        "name": "@angular/cli",
+        "version": "20.2.2",
+        "isSemVerMajor": true
+      }
+    },
+    "@inquirer/prompts": {
+      "name": "@inquirer/prompts",
+      "severity": "low",
+      "isDirect": false,
+      "via": [
+        "@inquirer/editor"
+      ],
+      "effects": [
+        "@angular/cli",
+        "@listr2/prompt-adapter-inquirer"
+      ],
+      "range": "<=6.0.1",
+      "nodes": [
+        "node_modules/@inquirer/prompts"
+      ],
+      "fixAvailable": {
+        "name": "@angular/cli",
+        "version": "20.2.2",
+        "isSemVerMajor": true
+      }
+    },
+    "@listr2/prompt-adapter-inquirer": {
+      "name": "@listr2/prompt-adapter-inquirer",
+      "severity": "low",
+      "isDirect": false,
+      "via": [
+        "@inquirer/prompts"
+      ],
+      "effects": [],
+      "range": "<=2.0.17",
+      "nodes": [
+        "node_modules/@listr2/prompt-adapter-inquirer"
+      ],
+      "fixAvailable": true
+    },
+    "@vitejs/plugin-basic-ssl": {
+      "name": "@vitejs/plugin-basic-ssl",
+      "severity": "moderate",
+      "isDirect": false,
+      "via": [
+        "vite"
+      ],
+      "effects": [
+        "@angular/build"
+      ],
+      "range": "<=1.1.0",
+      "nodes": [
+        "node_modules/@vitejs/plugin-basic-ssl"
+      ],
+      "fixAvailable": {
+        "name": "@angular-devkit/build-angular",
+        "version": "20.2.2",
+        "isSemVerMajor": true
+      }
+    },
+    "esbuild": {
+      "name": "esbuild",
+      "severity": "moderate",
+      "isDirect": false,
+      "via": [
+        {
+          "source": 1102341,
+          "name": "esbuild",
+          "dependency": "esbuild",
+          "title": "esbuild enables any website to send any requests to the development server and read the response",
+          "url": "https://github.com/advisories/GHSA-67mh-4wv8-2f99",
+          "severity": "moderate",
+          "cwe": [
+            "CWE-346"
+          ],
+          "cvss": {
+            "score": 5.3,
+            "vectorString": "CVSS:3.1/AV:N/AC:H/PR:N/UI:R/S:U/C:H/I:N/A:N"
+          },
+          "range": "<=0.24.2"
+        }
+      ],
+      "effects": [
+        "@angular-devkit/build-angular",
+        "@angular/build",
+        "vite"
+      ],
+      "range": "<=0.24.2",
+      "nodes": [
+        "node_modules/esbuild",
+        "node_modules/vite/node_modules/esbuild"
+      ],
+      "fixAvailable": {
+        "name": "@angular-devkit/build-angular",
+        "version": "20.2.2",
+        "isSemVerMajor": true
+      }
+    },
+    "external-editor": {
+      "name": "external-editor",
+      "severity": "low",
+      "isDirect": false,
+      "via": [
+        "tmp"
+      ],
+      "effects": [
+        "@inquirer/editor"
+      ],
+      "range": ">=1.1.1",
+      "nodes": [
+        "node_modules/external-editor"
+      ],
+      "fixAvailable": {
+        "name": "@angular/cli",
+        "version": "20.2.2",
+        "isSemVerMajor": true
+      }
+    },
+    "tmp": {
+      "name": "tmp",
+      "severity": "low",
+      "isDirect": false,
+      "via": [
+        {
+          "source": 1106849,
+          "name": "tmp",
+          "dependency": "tmp",
+          "title": "tmp allows arbitrary temporary file / directory write via symbolic link `dir` parameter",
+          "url": "https://github.com/advisories/GHSA-52f5-9888-hmc6",
+          "severity": "low",
+          "cwe": [
+            "CWE-59"
+          ],
+          "cvss": {
+            "score": 2.5,
+            "vectorString": "CVSS:3.1/AV:L/AC:H/PR:L/UI:N/S:U/C:N/I:L/A:N"
+          },
+          "range": "<=0.2.3"
+        }
+      ],
+      "effects": [
+        "external-editor"
+      ],
+      "range": "<=0.2.3",
+      "nodes": [
+        "node_modules/tmp"
+      ],
+      "fixAvailable": {
+        "name": "@angular/cli",
+        "version": "20.2.2",
+        "isSemVerMajor": true
+      }
+    },
+    "vite": {
+      "name": "vite",
+      "severity": "moderate",
+      "isDirect": false,
+      "via": [
+        "esbuild"
+      ],
+      "effects": [
+        "@angular/build",
+        "@vitejs/plugin-basic-ssl"
+      ],
+      "range": "0.11.0 - 6.1.6",
+      "nodes": [
+        "node_modules/vite"
+      ],
+      "fixAvailable": {
+        "name": "@angular-devkit/build-angular",
+        "version": "20.2.2",
+        "isSemVerMajor": true
+      }
+    }
+  },
+  "metadata": {
+    "vulnerabilities": {
+      "info": 0,
+      "low": 6,
+      "moderate": 5,
+      "high": 0,
+      "critical": 0,
+      "total": 11
+    },
+    "dependencies": {
+      "prod": 113,
+      "dev": 902,
+      "optional": 94,
+      "peer": 0,
+      "peerOptional": 0,
+      "total": 1014
+    }
+  }
+}
