@@ -43,6 +43,7 @@ import { AddSouszoneComponent } from './app-resp/zone/add-souszone/add-souszone.
 import { AddCiteComponent } from './app-resp/zone/add-cite/add-cite.component';
 import { AddClientsOoredooComponent } from './app-resp/client/add-clients-ooredoo/add-clients-ooredoo.component';
 import {ClientComponent} from './app-resp/client/client.component';
+import { OperateurOoredooComponent } from './operateur-ooredoo/operateur-ooredoo.component';
 
 
 
@@ -79,7 +80,9 @@ import {ClientComponent} from './app-resp/client/client.component';
     SetPasswordComponent,
     AddSouszoneComponent,
     AddCiteComponent,
-    AddClientsOoredooComponent
+    AddClientsOoredooComponent,
+    OperateurOoredooComponent,
+    RaccordementComponent
   ],
   imports: [
     BrowserModule,

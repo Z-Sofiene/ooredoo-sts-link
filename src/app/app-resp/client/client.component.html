@@ -115,6 +115,14 @@
         </button>
         <button
           class="etat-filter-btn"
+          [class.active]="selectedEtat === 'Hors zone'"
+          (click)="filterByEtat('Hors zone')">
+          <i class="fas fa-times-circle"></i>
+          Hors zone
+          <span class="count-badge">{{ getEtatCount('Hors zone') }}</span>
+        </button>
+        <button
+          class="etat-filter-btn"
           [class.active]="selectedEtat === 'Non disponible'"
           (click)="filterByEtat('Non disponible')">
           <i class="fas fa-times-circle"></i>
