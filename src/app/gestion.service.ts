@@ -459,7 +459,7 @@ export class GestionService {
   }
 
   getTachesRaccordementByClient(clientId: string | undefined): Observable<any> {
-    return this.http.get(stsgroupe_api + `responsable/taches_raccordement/${clientId}`,
+    return this.http.get(stsgroupe_api + `responsable/fiche_client/${clientId}`,
       {headers: this.tokenizer()})
       .pipe(catchError(this.handleError('getAllTachesRaccordementByClient')));
   }
