@@ -71,6 +71,9 @@ export class ClientComponent implements OnInit, OnChanges {
     selectedEtatRaccordement: null as EtatRaccordement | null,
   };
 
+  deletedClients = {
+    selectedClients: new Set<any>(),
+  };
   constructor(private gest: GestionService) {}
 
   ngOnInit(): void {
@@ -507,5 +510,63 @@ export class ClientComponent implements OnInit, OnChanges {
   goToPage(page: number) {
     if (page < 1 || page > this.totalPages) return;
     this.currentPage = page;
+  }
+
+
+  // ... dans la classe
+
+  showDeletedClientsModal = false;
+
+// Remplacer la méthode existante par celle-ci (ou la modifier)
+  openMultiDeletedClientModal() {
+    if (this.multiAssignData.selectedClients.size === 0) {
+      alert('Veuillez sélectionner au moins un client');
+      return;
+    }
+    // Copier la sélection pour la suppression
+    this.deletedClients.selectedClients = new Set(this.multiAssignData.selectedClients);
+    this.showDeletedClientsModal = true;
+  }
+
+  closeMultiDeletedClientsModal() {
+    this.showDeletedClientsModal = false;
+    this.deletedClients.selectedClients.clear();
+  }
+
+  submitMultiDelete() {
+    const selectedClientsArray = Array.from(this.deletedClients.selectedClients);
+    if (selectedClientsArray.length === 0) {
+      alert('Aucun client sélectionné à supprimer.');
+      return;
+    }
+
+    const confirmMessage = `Êtes-vous sûr de vouloir supprimer ${selectedClientsArray.length} client(s) ? Cette action est irréversible.`;
+    if (!confirm(confirmMessage)) return;
+
+    const ids = selectedClientsArray.map(client => client.id);
+
+    // Appel au service (à adapter selon votre API)
+    this.gest.deleteMultipleClients(ids).subscribe({
+      next: () => {
+        alert(`${ids.length} client(s) supprimé(s) avec succès.`);
+        // Réinitialiser les sélections
+        this.deletedClients.selectedClients.clear();
+        this.multiAssignData.selectedClients.clear();
+        this.showDeletedClientsModal = false;
+        // Recharger les données
+        this.loadClients(this.id, this.pathParam);
+        this.refresh.emit();
+      },
+      error: (err) => {
+        console.error('Erreur lors de la suppression multiple :', err);
+        alert('Erreur lors de la suppression des clients : ' + (err.error?.message || err.message));
+      }
+    });
+  }
+
+// Ajouter cette méthode si elle n'existe pas déjà pour gérer l'indéterminé
+  isSomeDeletedSelected(): boolean {
+    const selectedCount = this.deletedClients.selectedClients.size;
+    return selectedCount > 0 && selectedCount < this.filteredClientsList.length;
   }
 }

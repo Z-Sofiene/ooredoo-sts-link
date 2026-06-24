@@ -1,5 +1,7 @@
-import { Component, OnInit } from '@angular/core';
-import { GestionService } from '../../gestion.service';
+import {Component, OnInit} from '@angular/core';
+import {GestionService} from '../../gestion.service';
+import ExcelJS from 'exceljs';
+import {saveAs} from 'file-saver';
 
 interface Zone {
   id: number;
@@ -12,6 +14,7 @@ interface Projet {
   zones: Zone[];
 }
 
+interface Operateur { id: number; nomOperateur: string; }
 @Component({
   selector: 'app-raccordement',
   templateUrl: './raccordement.component.html',
@@ -58,6 +61,12 @@ export class RaccordementComponent implements OnInit {
   chefsEquipe: string[] = [];
   debits: string[] = [];
 
+  showTacheModel = false;
+  selectedClientId: string | null = null;
+  selectedZone: string = '';
+  selectedProjet: string = '';
+  selectedOperator: Operateur | null = null;
+
   constructor(private gest: GestionService) {}
 
   ngOnInit() {
@@ -75,6 +84,7 @@ export class RaccordementComponent implements OnInit {
         this.extractedProjetsAndZones();
         this.extractDynamicFilters();
         this.applyFilters();
+        this.selectedOperator = {id : 1 , nomOperateur : 'Ooredoo'};
       },
       error: err => console.error('Failed to load raccordements:', err)
     });
@@ -280,27 +290,22 @@ export class RaccordementComponent implements OnInit {
   // ACTIONS
   // =========================
 
-  addRaccordement() {
-    // Implémentez la navigation vers le formulaire d'ajout ou ouvrez un modal
-    console.log('Ajouter un nouveau raccordement');
-    // Exemple : this.router.navigate(['/raccordement/new']);
+  viewRaccordement(clientId: string) {
+    const raccordement = this.raccordements.find(r => r.clientId === clientId);
+    if (raccordement) {
+      this.selectedClientId = clientId;
+      this.selectedZone = raccordement.zone || '';
+      this.selectedProjet = raccordement.projet || '';
+      this.showTacheModel = true;
+    } else {
+      console.warn('Raccordement non trouvé pour clientId:', clientId);
+    }
   }
-
-  editRaccordement(r: any) {
-    console.log('Edit raccordement:', r);
-    // Implémentez la modification
-  }
-
-  viewRaccordement(r: any) {
-    console.log('Voir détails du raccordement:', r);
-    // Implémentez l'affichage des détails (modal ou navigation)
-  }
-
-  deleteRaccordement(id: string) {
-    if (!confirm('Êtes-vous sûr de vouloir supprimer ce raccordement ?')) return;
-    this.gest.deleteRaccordement(id).subscribe(() => {
-      this.loadRaccordements();
-    });
+  closeDetailModal() {
+    this.showTacheModel = false;
+    this.selectedClientId = null;
+    this.selectedZone = '';
+    this.selectedProjet = '';
   }
 
   resetFilters() {
@@ -325,12 +330,495 @@ export class RaccordementComponent implements OnInit {
   }
 
   exportData() {
-    // Implémentez l'export des données (ex: CSV, Excel)
-    console.log('Exporter les données');
-    // Exemple : télécharger un fichier CSV
+    this.openPreview();
   }
-
   refreshData() {
     this.loadRaccordements();
   }
+
+// =========================
+// EXPORT PREVIEW
+// =========================
+  showPreviewModal = false;
+  previewData: any[] = [];
+  previewProjet: Projet | null = null;
+  isLoadingPreview = false;
+
+
+  /**
+   * Extract ISO date safely
+   */
+  private parseDate(dateStr: string): Date | null {
+    if (!dateStr) return null;
+
+    const isoPart = dateStr.split(' ')[0];
+    const date = new Date(isoPart);
+
+    return isNaN(date.getTime()) ? null : date;
+  }
+
+  /**
+   * Format date for display
+   */
+  private formatDateForExcel(date: Date): string {
+    return date.toLocaleDateString('fr-FR', {
+      weekday: 'long',
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric'
+    });
+  }
+
+  confirmExport(selectedProjet: Projet) {
+
+    const workbook = new ExcelJS.Workbook();
+    const sheet = workbook.addWorksheet('Raccordements');
+
+    const baseFont = { name: 'Calibri', size: 11 };
+    const boldFont = { ...baseFont, bold: true };
+    const titleFont = {
+      ...baseFont,
+      bold: true,
+      size: 14,
+      color: { argb: 'FF1F4E79' }
+    };
+
+
+    // =========================
+    // 1. TOP INFORMATION SECTION
+    // =========================
+
+    let currentRow = 2; // Row 1 empty
+
+
+    // TITLE
+    const titleRow = sheet.getRow(currentRow++);
+
+    titleRow.getCell(1).value = 'Abonnés FTTH OOREDOO';
+    titleRow.getCell(1).font = titleFont;
+
+    sheet.mergeCells(`A${currentRow - 1}:K${currentRow - 1}`);
+
+
+
+    // Empty row
+    currentRow++;
+
+
+
+    // =========================
+    // FILTERS HORIZONTAL DISPLAY
+    // =========================
+
+    if (this.appliedFilters.length) {
+
+
+      // FILTER LABELS ROW
+      const filterHeaderRow = sheet.getRow(currentRow++);
+
+
+      this.appliedFilters.forEach((filter, index) => {
+
+        const cell = filterHeaderRow.getCell(index + 1);
+
+        cell.value = filter.label;
+        cell.font = boldFont;
+
+        cell.alignment = {
+          horizontal: 'center',
+          vertical: 'middle'
+        };
+
+        cell.fill = {
+          type: 'pattern',
+          pattern: 'solid',
+          fgColor: { argb: 'FFD9EAF7' }
+        };
+
+        cell.border = {
+          top: { style: 'thin' },
+          left: { style: 'thin' },
+          bottom: { style: 'thin' },
+          right: { style: 'thin' }
+        };
+
+      });
+
+
+
+      // FILTER VALUES ROW
+      const filterValueRow = sheet.getRow(currentRow++);
+
+
+      this.appliedFilters.forEach((filter, index) => {
+
+        const cell = filterValueRow.getCell(index + 1);
+
+        cell.value = filter.value;
+
+        cell.alignment = {
+          horizontal: 'center',
+          vertical: 'middle'
+        };
+
+
+        cell.border = {
+          top: { style: 'thin' },
+          left: { style: 'thin' },
+          bottom: { style: 'thin' },
+          right: { style: 'thin' }
+        };
+
+      });
+
+
+      // Empty row before table
+      currentRow++;
+
+    }
+
+
+
+    // =========================
+    // 2. EXCEL TABLE COLUMNS
+    // =========================
+
+    sheet.columns = [
+      { header: 'Cas CRM', key: 'label', width: 20 },
+      { header: 'ZONE', key: 'zoneLabel', width: 25 },
+      { header: 'RESIDENCE', key: 'adresse', width: 40 },
+      { header: 'ABONNES', key: 'nomClient', width: 25 },
+      { header: 'S/N ONT', key: 'snont', width: 18 },
+      { header: 'Numéro Fixe', key: 'msisdn', width: 18 },
+      { header: 'Équipe', key: 'equipe', width: 20 },
+      { header: '📅 Date RDV', key: 'dateRDV', width: 28 },
+      { header: "Chef d'équipe", key: 'chefEquipe', width: 25 },
+      { header: 'Techniciens', key: 'techniciens', width: 18 },
+      { header: 'SN Box', key: 'snBox', width: 20 }
+    ];
+
+
+
+    // =========================
+    // 3. TABLE HEADER
+    // =========================
+
+    const headerRowIndex = currentRow;
+
+    const headerRow = sheet.getRow(headerRowIndex);
+
+
+    sheet.columns.forEach((col, index) => {
+
+      headerRow.getCell(index + 1).value = col.header as string;
+
+    });
+
+
+
+    headerRow.font = {
+      ...baseFont,
+      bold: true,
+      color: { argb: 'FFFFFFFF' },
+      size: 12
+    };
+
+
+    headerRow.fill = {
+      type: 'pattern',
+      pattern: 'solid',
+      fgColor: { argb: 'FF1F4E79' }
+    };
+
+
+    headerRow.alignment = {
+      vertical: 'middle',
+      horizontal: 'center'
+    };
+
+
+    headerRow.eachCell(cell => {
+
+      cell.border = {
+        top: { style: 'thin' },
+        left: { style: 'thin' },
+        bottom: { style: 'thin' },
+        right: { style: 'thin' }
+      };
+
+    });
+
+
+
+    currentRow++;
+
+
+
+    // =========================
+    // 4. DATA
+    // =========================
+
+
+    const sorted = [...this.previewData].sort((a, b) => {
+
+      const d1 = this.parseDate(a.dateRDV)?.getTime() || 0;
+      const d2 = this.parseDate(b.dateRDV)?.getTime() || 0;
+
+      return d1 - d2;
+
+    });
+
+
+
+    sorted.forEach(row => {
+
+
+      const formattedDate = row.dateRDV
+        ? `📅 ${this.formatDateForExcel(this.parseDate(row.dateRDV)!)}`
+        : 'Sans date';
+
+
+
+      const dataRow = sheet.getRow(currentRow++);
+
+
+      dataRow.values = [
+        row.label,
+        row.zoneLabel,
+        row.adresse,
+        row.nomClient,
+        row.snont,
+        row.msisdn,
+        row.equipe,
+        formattedDate,
+        row.chefEquipe,
+        row.techniciens,
+        row.snBox
+      ];
+
+
+
+      dataRow.font = baseFont;
+
+
+      dataRow.alignment = {
+        vertical: 'middle',
+        horizontal: 'left',
+        wrapText: true
+      };
+
+
+
+      dataRow.eachCell((cell, colNumber) => {
+
+
+        if (colNumber === 8) {
+
+          cell.alignment = {
+            vertical: 'middle',
+            horizontal: 'center',
+            wrapText: true
+          };
+
+
+          cell.font = {
+            name: 'Calibri',
+            size: 11,
+            bold: true,
+            color: { argb: 'FF1F4E79' }
+          };
+
+
+          cell.fill = {
+            type: 'pattern',
+            pattern: 'solid',
+            fgColor: { argb: 'FFE8F1FB' }
+          };
+
+        }
+
+
+
+        cell.border = {
+          top: { style: 'thin' },
+          left: { style: 'thin' },
+          bottom: { style: 'thin' },
+          right: { style: 'thin' }
+        };
+
+
+      });
+
+
+    });
+
+
+
+    // =========================
+    // 5. MERGE RDV CELLS
+    // =========================
+
+
+    const dataStartRow = headerRowIndex + 1;
+    const dataEndRow = currentRow - 1;
+
+
+    let mergeStart = dataStartRow;
+    let currentDateValue: string | null = null;
+
+
+
+    for (let i = 0; i < sorted.length; i++) {
+
+
+      const rowIndex = dataStartRow + i;
+
+      const value = sorted[i].dateRDV || 'Sans date';
+
+
+
+      if (value !== currentDateValue) {
+
+
+        if (i > 0 && mergeStart < rowIndex - 1) {
+
+          sheet.mergeCells(
+            `H${mergeStart}:H${rowIndex - 1}`
+          );
+
+        }
+
+
+        mergeStart = rowIndex;
+        currentDateValue = value;
+
+      }
+
+    }
+
+
+
+    if (mergeStart < dataEndRow) {
+
+      sheet.mergeCells(
+        `H${mergeStart}:H${dataEndRow}`
+      );
+
+    }
+
+
+    sheet.getRow(1).values = [];
+    // =========================
+    // 6. EXPORT
+    // =========================
+
+    workbook.xlsx.writeBuffer().then(buffer => {
+
+      const blob = new Blob(
+        [buffer],
+        {
+          type:
+            'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+        }
+      );
+
+
+      saveAs(
+        blob,
+        `raccordements_${selectedProjet.nomProjet}.xlsx`
+      );
+
+    });
+
+
+
+    this.showPreviewModal = false;
+  }
+
+
+  private mapForExport(r: any) {
+    const i = r.intervention;
+
+    return {
+      label: i?.label ?? '',
+      zoneLabel: i?.zoneLabel ?? '',
+      adresse: i?.adresse ?? '',
+      nomClient: i?.nomClient ?? '',
+      snont: i?.snont ?? '',
+      msisdn: i?.msisdn ?? '',
+      equipe: i?.equipe ?? '',
+      dateRDV: i?.dateRDV ? new Date(i.dateRDV).toLocaleDateString() : '',
+      chefEquipe: i?.chefEquipe ?? '',
+      techniciens: i?.techniciens ?? '',
+      snBox: i?.snBox ?? ''
+    };
+  }
+
+
+  appliedFilters: { label: string; value: any }[] = [];
+  /**
+   * Build an array of active filters for display/export.
+   */
+  private buildAppliedFilters(): { label: string; value: any }[] {
+    const filters: { label: string; value: any }[] = [];
+
+    // Example: project filter
+    if (this.filterProjet) {
+      filters.push({ label: 'Projet', value: this.filterProjet });
+    }
+    // Example: zone filter
+    if (this.filterZone) {
+      filters.push({ label: 'Zone', value: this.filterZone });
+    }
+    // Example: date range
+    if (this.filterDateStart && this.filterDateEnd) {
+      filters.push({
+        label: 'Période',
+        value: `${this.filterDateStart} → ${this.filterDateEnd}`
+      });
+    } else if (this.filterDateStart) {
+      filters.push({ label: 'Date début', value: this.filterDateStart });
+    } else if (this.filterDateEnd) {
+      filters.push({ label: 'Date fin', value: this.filterDateEnd });
+    }
+    if (this.filterChef) {
+      filters.push({ label: "Chef d'équipe", value: this.filterChef });
+    }
+    if (this.filterDateRDV) {
+      filters.push({ label: 'RDV', value: this.filterDateRDV });
+    }
+    if (this.filterEtat) {
+      filters.push({ label: 'État', value: this.filterEtat });
+    }
+
+    return filters;
+  }
+
+
+  // Modify openPreview to capture filters
+  openPreview() {
+    const source = this.filteredRaccordements;
+
+    if (!source?.length) {
+      alert('Aucun raccordement ne correspond aux filtres actuels.');
+      return;
+    }
+
+    this.isLoadingPreview = true;
+
+    // 1. Build applied filters
+    this.appliedFilters = this.buildAppliedFilters();
+
+    // 2. Prepare data
+    this.previewData = source.map(r => this.mapForExport(r));
+
+    this.previewProjet = this.filterProjet
+      ? this.projets.find(p => p.nomProjet === this.filterProjet) ||
+      { id: 0, nomProjet: this.filterProjet, zones: [] }
+      : { id: 0, nomProjet: 'Tous les projets', zones: [] };
+
+    this.isLoadingPreview = false;
+    this.showPreviewModal = true;
+  }
+
 }

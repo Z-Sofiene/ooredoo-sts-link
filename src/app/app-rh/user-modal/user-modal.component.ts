@@ -19,7 +19,7 @@ export class UserModalComponent implements OnChanges, OnInit {
   @Input() show = false;
   @Input() mode: 'add' | 'view' | 'edit' = 'add';
   @Input() user: any = null;
-  @Input() userType: 'chef projet' | 'responsable' | 'technicien' | 'chef equipe' | 'admin' = 'chef projet';
+  @Input() userType: 'chef projet' | 'responsable' | 'technicien' | 'chef equipe' | 'admin' | 'agent ooredoo' = 'chef projet';
 
   @Output() close = new EventEmitter<void>();
   @Output() refresh = new EventEmitter<void>();
@@ -31,8 +31,8 @@ export class UserModalComponent implements OnChanges, OnInit {
     telephone: ''
   };
   loggedInUser = '';
-  userTypes: ('chef projet' | 'responsable' | 'chef equipe' | 'technicien' | 'admin')[] =
-    ['chef projet', 'responsable', 'chef equipe', 'technicien', 'admin'];
+  userTypes: ('chef projet' | 'responsable' | 'chef equipe' | 'technicien' | 'admin' | 'agent ooredoo')[] =
+    ['chef projet', 'responsable', 'chef equipe', 'technicien', 'admin', 'agent ooredoo'];
 
   // Soutraitance
   soutraitances: any[] = [];
@@ -47,10 +47,11 @@ export class UserModalComponent implements OnChanges, OnInit {
   ngOnInit() {
     this.loadSoutraitances();
     this.loggedInUser = this.gest.getRoleFromToken(); // or from token
-
-    if (this.loggedInUser !== 'ADMIN' ) {
-      this.userTypes = this.userTypes.filter(t => t !== 'admin');
+    if (this.loggedInUser !== 'ADMIN') {
+      const blocked = ['admin', 'agent ooredoo'];
+      this.userTypes = this.userTypes.filter(t => !blocked.includes(t));
     }
+
   }
 
   ngOnChanges(changes: SimpleChanges) {
@@ -114,6 +115,7 @@ export class UserModalComponent implements OnChanges, OnInit {
       case 'TECHNICIEN': return 'technicien';
       case 'CHEF': return 'chef equipe';
       case 'ADMIN': return 'admin';
+      case 'OOREDOO': return 'agent ooredoo';
       default: return 'chef projet';
     }
   }
@@ -132,6 +134,7 @@ export class UserModalComponent implements OnChanges, OnInit {
         this.userType === 'responsable' ? 'responsable' :
         this.userType === 'technicien' ? 'technicien' :
           this.userType === 'chef equipe' ? 'chef_equipe' :
+            this.userType === 'agent ooredoo' ? 'agent_ooredoo' :
             'admin';
 
     const payload: any = {
@@ -144,6 +147,7 @@ export class UserModalComponent implements OnChanges, OnInit {
           this.userType === 'responsable' ? 'ROLE_RESPONSABLE' :
           this.userType === 'technicien' ? 'ROLE_TECHNICIEN' :
             this.userType === 'chef equipe' ? 'ROLE_CHEF' :
+              this.userType === 'agent ooredoo' ? 'ROLE_OOREDOO' :
               'ROLE_ADMIN'
     };
 
@@ -158,7 +162,7 @@ export class UserModalComponent implements OnChanges, OnInit {
     );
 
     // Always send empty file
-    if (this.userType !== 'admin') {
+    if (this.userType !== 'admin' && this.userType !== 'agent ooredoo') {
       formData.append(
         'file',
         new Blob([new Uint8Array(0)], { type: 'application/octet-stream' })
@@ -170,6 +174,7 @@ export class UserModalComponent implements OnChanges, OnInit {
     else if (this.userType === 'responsable') request$ = this.gest.addResponsable(formData);
     else if (this.userType === 'technicien') request$ = this.gest.addTech(formData);
     else if (this.userType === 'chef equipe') request$ = this.gest.addChef(formData);
+    else if (this.userType === 'agent ooredoo') request$ = this.gest.addAgentOoredoo(formData);
     else request$ = this.gest.addAdmin(formData);
 
     request$.subscribe({

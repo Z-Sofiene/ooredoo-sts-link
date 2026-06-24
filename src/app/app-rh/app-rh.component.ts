@@ -103,6 +103,7 @@ export class AppRhComponent implements OnInit {
       case 'RESPONSABLE': return 'responsable';
       case 'TECHNICIEN': return 'technicien';
       case 'CHEF': return 'chef equipe';
+      case 'OOREDOO': return 'agent ooredoo';
       case 'ADMIN': return 'admin';
       default: return 'chef projet';
     }

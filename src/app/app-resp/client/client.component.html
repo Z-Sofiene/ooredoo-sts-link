@@ -61,80 +61,70 @@
           class="etat-filter-btn"
           [class.active]="selectedEtat === 'all'"
           (click)="filterByEtat('all')">
-          <i class="fas fa-list"></i>
-          Tous
+          <i class="fas fa-list"></i> Tous
           <span class="count-badge">{{ getEtatCount('all') }}</span>
         </button>
         <button
           class="etat-filter-btn"
           [class.active]="selectedEtat === 'Non affecté'"
           (click)="filterByEtat('Non affecté')">
-          <i class="fas fa-ban"></i>
-          Non affecté
+          <i class="fas fa-ban"></i> Non affecté
           <span class="count-badge">{{ getEtatCount('Non affecté') }}</span>
         </button>
         <button
           class="etat-filter-btn"
           [class.active]="selectedEtat === 'En attente'"
           (click)="filterByEtat('En attente')">
-          <i class="fas fa-clock"></i>
-          En attente
+          <i class="fas fa-clock"></i> En attente
           <span class="count-badge">{{ getEtatCount('En attente') }}</span>
         </button>
         <button
           class="etat-filter-btn"
           [class.active]="selectedEtat === 'En cours'"
           (click)="filterByEtat('En cours')">
-          <i class="fas fa-spinner"></i>
-          En cours
+          <i class="fas fa-spinner"></i> En cours
           <span class="count-badge">{{ getEtatCount('En cours') }}</span>
         </button>
         <button
           class="etat-filter-btn"
           [class.active]="selectedEtat === 'Terminé'"
           (click)="filterByEtat('Terminé')">
-          <i class="fas fa-check-circle"></i>
-          Terminé
+          <i class="fas fa-check-circle"></i> Terminé
           <span class="count-badge">{{ getEtatCount('Terminé') }}</span>
         </button>
         <button
           class="etat-filter-btn"
           [class.active]="selectedEtat === 'Annulé'"
           (click)="filterByEtat('Annulé')">
-          <i class="fas fa-times-circle"></i>
-          Annulé
+          <i class="fas fa-times-circle"></i> Annulé
           <span class="count-badge">{{ getEtatCount('Annulé') }}</span>
         </button>
         <button
           class="etat-filter-btn"
           [class.active]="selectedEtat === 'Non fibré'"
           (click)="filterByEtat('Non fibré')">
-          <i class="fas fa-times-circle"></i>
-          Non fibré
+          <i class="fas fa-times-circle"></i> Non fibré
           <span class="count-badge">{{ getEtatCount('Non fibré') }}</span>
         </button>
         <button
           class="etat-filter-btn"
           [class.active]="selectedEtat === 'Hors zone'"
           (click)="filterByEtat('Hors zone')">
-          <i class="fas fa-times-circle"></i>
-          Hors zone
+          <i class="fas fa-times-circle"></i> Hors zone
           <span class="count-badge">{{ getEtatCount('Hors zone') }}</span>
         </button>
         <button
           class="etat-filter-btn"
           [class.active]="selectedEtat === 'Non disponible'"
           (click)="filterByEtat('Non disponible')">
-          <i class="fas fa-times-circle"></i>
-          Non disponible
+          <i class="fas fa-times-circle"></i> Non disponible
           <span class="count-badge">{{ getEtatCount('Non disponible') }}</span>
         </button>
         <button
           class="etat-filter-btn"
           [class.active]="selectedEtat === 'RDV raté'"
           (click)="filterByEtat('RDV raté')">
-          <i class="fas fa-times-circle"></i>
-          RDV raté
+          <i class="fas fa-times-circle"></i> RDV raté
           <span class="count-badge">{{ getEtatCount('RDV raté') }}</span>
         </button>
       </div>
@@ -191,16 +181,13 @@
               class="switch-btn"
               [class.active]="viewMode === 'clients'"
               (click)="viewMode='clients'">
-              <i class="fa fa-users"></i>
-              Clients
+              <i class="fa fa-users"></i> Clients
             </button>
-
             <button
               class="switch-btn"
               [class.active]="viewMode === 'raccordements'"
               (click)="viewMode='raccordements'">
-              <i class="fa fa-network-wired"></i>
-              Raccordements
+              <i class="fa fa-network-wired"></i> Raccordements
             </button>
           </div>
 
@@ -209,10 +196,16 @@
             class="btn-multi-assign"
             (click)="openMultiAssignModal()"
             [class.has-selection]="multiAssignData.selectedClients.size > 0">
-            <i class="fas fa-users"></i>
-            Affecter ({{ multiAssignData.selectedClients.size }})
+            <i class="fas fa-users"></i> Affecter ({{ multiAssignData.selectedClients.size }})
           </button>
 
+          <!-- Multi-delete Button -->
+          <button
+            class="btn-multi-delete"
+            (click)="openMultiDeletedClientModal()"
+            [class.has-selection]="multiAssignData.selectedClients.size > 0">
+            <i class="fas fa-trash-alt"></i> Supprimer ({{ multiAssignData.selectedClients.size }})
+          </button>
         </div>
 
         <div class="table-wrapper">
@@ -335,11 +328,9 @@
               [disabled]="currentPage === 1">
               <i class="fas fa-chevron-left"></i> Précédent
             </button>
-
             <span class="pagination-info">
               Page {{ currentPage }} / {{ totalPages }}
             </span>
-
             <button
               (click)="goToPage(currentPage + 1)"
               [disabled]="currentPage === totalPages">
@@ -351,9 +342,11 @@
       </div>
     </div>
 
-    <!-- BOTTOM MODAL SECTIONS - Appear under the table instead of as overlays -->
+    <!-- ============================================================= -->
+    <!-- BOTTOM MODAL SECTIONS (affichées sous le tableau)             -->
+    <!-- ============================================================= -->
 
-    <!-- Multi Assign Modal Section -->
+    <!-- Multi Assign Modal -->
     <div *ngIf="showMultiAssignModal" class="bottom-modal-section">
       <div class="bottom-modal-container" [class]="getThemeClass()">
         <div class="bottom-modal-header">
@@ -376,9 +369,9 @@
               </div>
 
               <div class="form-field">
-                <label>Etat du Raccordement</label>
+                <label>État du Raccordement</label>
                 <select class="form-control" [(ngModel)]="multiAssignData.selectedEtatRaccordement">
-                  <option [ngValue]="null">-- Sélectionner une etat --</option>
+                  <option [ngValue]="null">-- Sélectionner un état --</option>
                   <option *ngFor="let etatRaccordement of etatsRaccordement" [ngValue]="etatRaccordement">
                     {{ etatRaccordement.etat }}
                   </option>
@@ -391,8 +384,7 @@
                   <button class="btn-add-type-icon" (click)="showTypeModal = true; showMultiAssignModal = false" title="Ajouter un type">
                     <i class="fas fa-plus"></i>
                   </button>
-
-                  <button class="btn-manage-types" (click)="showDeleteTypesModal = true; showTypeModal = false">
+                  <button class="btn-manage-types" (click)="showDeleteTypesModal = true; showTypeModal = false" title="Gérer les types">
                     <i class="fas fa-trash"></i>
                   </button>
                 </div>
@@ -429,7 +421,7 @@
       </div>
     </div>
 
-    <!-- Add Raccordement Modal Section -->
+    <!-- Add Raccordement Modal -->
     <div *ngIf="showAddRaccordementModal" class="bottom-modal-section">
       <div class="bottom-modal-container" [class]="getThemeClass()">
         <div class="bottom-modal-header">
@@ -444,7 +436,7 @@
       </div>
     </div>
 
-    <!-- Type Modal Section -->
+    <!-- Add Type Modal -->
     <div *ngIf="showTypeModal" class="bottom-modal-section">
       <div class="bottom-modal-container" [class]="getThemeClass()">
         <div class="bottom-modal-header">
@@ -464,19 +456,19 @@
                 [(ngModel)]="newType.type"
                 name="newType"
                 required
-                placeholder="Ex: FTTH, FTTB, etc.">
+                placeholder="Ex: FTTH, FTTB, etc."
+              />
             </div>
             <div class="form-actions">
               <button type="button" class="btn-cancel" (click)="showTypeModal = false">Annuler</button>
               <button type="submit" class="btn-submit">Ajouter Type</button>
             </div>
           </form>
-
         </div>
       </div>
     </div>
 
-    <!-- Delete Types Modal Section -->
+    <!-- Delete Types Modal -->
     <div *ngIf="showDeleteTypesModal" class="bottom-modal-section">
       <div class="bottom-modal-container" [class]="getThemeClass()">
         <div class="bottom-modal-header">
@@ -504,10 +496,41 @@
       </div>
     </div>
 
-  </div>
-</div>
+    <!-- ===== DELETE MULTIPLE CLIENTS MODAL (overlay interne) ===== -->
+    <div *ngIf="showDeletedClientsModal" class="delete-modal-overlay">
+      <div class="delete-modal-content" [class]="getThemeClass()">
+        <div class="bottom-modal-header">
+          <h3 class="bottom-modal-title">
+            <i class="fas fa-trash-alt"></i> Supprimer des clients
+          </h3>
+          <button class="bottom-modal-close" (click)="closeMultiDeletedClientsModal()">✕</button>
+        </div>
+        <div class="bottom-modal-body">
+          <div class="delete-confirmation">
+            <p>
+              Vous vous apprêtez à supprimer <strong>{{ deletedClients.selectedClients.size }}</strong> client(s).
+              Cette action est irréversible.
+            </p>
+            <div class="selected-clients-list">
+              <div *ngFor="let client of deletedClients.selectedClients" class="selected-client-tag">
+                {{ client.label }} - {{ client.nom }} {{ client.prenom }}
+              </div>
+            </div>
+            <div class="form-actions" style="margin-top: 16px;">
+              <button class="btn-cancel" (click)="closeMultiDeletedClientsModal()">Annuler</button>
+              <button class="btn-submit btn-danger" (click)="submitMultiDelete()">
+                <i class="fas fa-trash"></i> Confirmer la suppression
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
 
-<!-- Tache Modal (kept as overlay since it appears to be a different component) -->
+  </div> <!-- fin .modal-container -->
+</div> <!-- fin .modal-overlay -->
+
+<!-- Tache Modal (kept as overlay) -->
 <div *ngIf="showTacheModel">
   <app-tache
     [zone]="zone"

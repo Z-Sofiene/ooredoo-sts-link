@@ -44,18 +44,20 @@ export class HeaderComponent implements OnInit {
     // RESPONSABLE menu items
     const respMenu: MenuItem[] = [
       { icon: 'fas fa-route text-white-900', label: 'Tableau de bord', route: '/dashboard', active: false },
-      { icon: 'fas fa-network-wired text-white-900', label: 'Raccordements', route: '/raccordements', active: false },
     ];
-
+    const agentOoredooMenu: MenuItem[] = [
+      { icon: 'fas fa-network-wired text-white-900', label: 'Abonnés FTTH', route: '/raccordements', active: false },
+    ];
     //Magasinier Menu
     const magasinierMenu: MenuItem[] = [
       { icon: 'fas fa-box text-white-900', label: 'Articles', route: '/articles', active: false },
     ];
 
-    if (this.roleUser === 'CHEFPROJET') menu.push(...respMenu, ...chefProjetMenu, ...magasinierMenu, ...rhMenu);
-    if (this.roleUser === 'RESPONSABLE') menu.push(...respMenu, ...magasinierMenu);
-    if (this.roleUser === 'ADMIN') menu.push(...adminMenu, ...chefProjetMenu, ...rhMenu);
+    if (this.roleUser === 'CHEFPROJET') menu.push(...respMenu, ...agentOoredooMenu, ...chefProjetMenu, ...magasinierMenu, ...rhMenu);
+    if (this.roleUser === 'RESPONSABLE') menu.push(...respMenu, ...agentOoredooMenu, ...magasinierMenu);
+    if (this.roleUser === 'ADMIN') menu.push(...adminMenu, ...agentOoredooMenu, ...chefProjetMenu, ...rhMenu);
     if (this.roleUser === 'RH') menu.push(...rhMenu);
+    if (this.roleUser === 'OOREDOO') menu.push(...agentOoredooMenu);
 
     // Optionally mark the first item as active
     if (menu.length > 0) menu[0].active = true;

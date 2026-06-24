@@ -151,14 +151,6 @@ export class GestionService {
         catchError(this.handleError('deleteTypeRaccordement'))
       );
   }
-
-  deleteRaccordement(id: string) {
-    return this.http.delete(stsgroupe_api + `responsable/raccordement/${id}`, { headers: this.tokenizer(), responseType: 'text' })
-      .pipe(
-        catchError(this.handleError('deleteRaccordement'))
-      );
-  }
-
   addRaccordement(newRaccordement: any): Observable<any> {
     const payload = JSON.stringify(newRaccordement); // <-- stringify the object
     return this.http.post(
@@ -301,24 +293,7 @@ export class GestionService {
       { headers: this.tokenizer() }
     ).pipe(catchError(this.handleError('createZone')));
   }
-  createSousZone(sousZone: any) {
-    const payload = JSON.stringify(sousZone); // <-- stringify the object
-    return this.http.post(
-      stsgroupe_api + 'responsable/sousZone/add',
-      payload,
-      { headers: this.tokenizer() }
-    ).pipe(catchError(this.handleError('createSousZone')));
-  }
-  createCite(cite: any) {
-    const payload = JSON.stringify(cite); // <-- stringify the object
-    return this.http.post(
-      stsgroupe_api + 'responsable/cite/add',
-      payload,
-      { headers: this.tokenizer() }
-    ).pipe(catchError(this.handleError('createCite')));
-  }
-
-  //
+//
 
   getAllCLients(id: string, param: string): Observable<any> {
     return this.http.get(stsgroupe_api + 'responsable/'+param+'/clients',
@@ -488,12 +463,6 @@ export class GestionService {
       {headers: this.tokenizer()})
       .pipe(catchError(this.handleError('getAllTachesRaccordementByClient')));
   }
-
-  getAllTachesRaccordements(){
-    return this.get<any>('test/taches_raccordements');
-
-  }
-
   addAllRaccordements(raccordementsDTO: any) {
     return this.http.post(
       stsgroupe_api + 'responsable/raccordements/ooredoo/addAll',
@@ -507,4 +476,22 @@ export class GestionService {
       })
     );
   }
+
+  deleteMultipleClients(clientIds: string[]) {
+    return this.http.delete(
+      stsgroupe_api + `responsable/client/delete-multiple`,
+      {
+        headers: this.tokenizer(),
+        body: clientIds,
+        responseType: 'text',
+      }
+    ).pipe(
+      catchError(this.handleError('deleteMultipleClients'))
+    );
+  }
+
+  addAgentOoredoo(formData: FormData): Observable<any> {
+    return this.http.post(stsgroupe_api + 'admin/agent_ooredoo/add', formData, { headers: this.tokenizer() });
+  }
+
 }

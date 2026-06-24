@@ -58,6 +58,8 @@ export class LoginComponent {
           this.navigate('/dashboard');
         } else if (roleUser === 'RH') {
           this.navigate('/users');
+        } else if (roleUser === 'OOREDOO') {
+          this.navigate('/raccordements');
         } else {
           this.gest.logout();
           this.navigate('/login');

@@ -44,6 +44,7 @@ import { AddCiteComponent } from './app-resp/zone/add-cite/add-cite.component';
 import { AddClientsOoredooComponent } from './app-resp/client/add-clients-ooredoo/add-clients-ooredoo.component';
 import {ClientComponent} from './app-resp/client/client.component';
 import { OperateurOoredooComponent } from './operateur-ooredoo/operateur-ooredoo.component';
+import { DetailRaccordementComponent } from './app-resp/raccordement/detail-raccordement/detail-raccordement.component';
 
 
 
@@ -82,7 +83,8 @@ import { OperateurOoredooComponent } from './operateur-ooredoo/operateur-ooredoo
     AddCiteComponent,
     AddClientsOoredooComponent,
     OperateurOoredooComponent,
-    RaccordementComponent
+    RaccordementComponent,
+    DetailRaccordementComponent
   ],
   imports: [
     BrowserModule,
