@@ -21,11 +21,11 @@ export class SidebarComponent implements OnInit {
   menuItems: MenuItem[] = [];
 
   constructor(private router: Router, private authService: GestionService) {}
-
+  role : string | null = null
 
   ngOnInit() {
     const menu: MenuItem[] = [];
-
+    this.role = this.authService.getRoleFromToken()
     // RH menu items
     const rhMenu: MenuItem[] = [
       { icon: 'fas fa-users', label: 'Utilisateurs', route: '/users', active: false },
@@ -33,7 +33,6 @@ export class SidebarComponent implements OnInit {
 
     // Admin menu
     const adminMenu: MenuItem[] = [
-      { icon: 'fas fa-tachometer-alt', label: 'Tableau de bord', route: '/dashboard/admin', active: false },
       { icon: 'fas fa-tower-broadcast text-white-900', label: 'Operateurs', route: '/operateurs', active: false },
     ]
 
@@ -47,6 +46,7 @@ export class SidebarComponent implements OnInit {
       { icon: 'fas fa-route text-white-900', label: 'Tableau de bord', route: '/dashboard', active: false },
     ];
     const agentOoredooMenu: MenuItem[] = [
+        { icon: 'fas fa-chart-line text-white-900', label: 'Statistique', route: '/statistique', active: false },
         { icon: 'fas fa-network-wired text-white-900', label: 'Abonnés FTTH', route: '/raccordements', active: false },
       ];
     //Magasinier Menu
@@ -56,7 +56,7 @@ export class SidebarComponent implements OnInit {
 
     if (this.roleUser === 'CHEFPROJET') menu.push(...respMenu, ...agentOoredooMenu, ...chefProjetMenu, ...magasinierMenu, ...rhMenu);
     if (this.roleUser === 'RESPONSABLE') menu.push(...respMenu, ...agentOoredooMenu, ...magasinierMenu);
-    if (this.roleUser === 'ADMIN') menu.push(...adminMenu, ...agentOoredooMenu, ...chefProjetMenu, ...rhMenu);
+    if (this.roleUser === 'ADMIN') menu.push(...agentOoredooMenu, ...adminMenu, ...chefProjetMenu, ...rhMenu);
     if (this.roleUser === 'RH') menu.push(...rhMenu);
     if (this.roleUser === 'OOREDOO') menu.push(...agentOoredooMenu);
     if (menu.length > 0) menu[0].active = true;

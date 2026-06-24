@@ -45,6 +45,7 @@ import { AddClientsOoredooComponent } from './app-resp/client/add-clients-ooredo
 import {ClientComponent} from './app-resp/client/client.component';
 import { OperateurOoredooComponent } from './operateur-ooredoo/operateur-ooredoo.component';
 import { DetailRaccordementComponent } from './app-resp/raccordement/detail-raccordement/detail-raccordement.component';
+import { DashboardOoredooComponent } from './app-resp/dashboard-ooredoo/dashboard-ooredoo.component';
 
 
 
@@ -84,7 +85,8 @@ import { DetailRaccordementComponent } from './app-resp/raccordement/detail-racc
     AddClientsOoredooComponent,
     OperateurOoredooComponent,
     RaccordementComponent,
-    DetailRaccordementComponent
+    DetailRaccordementComponent,
+    DashboardOoredooComponent
   ],
   imports: [
     BrowserModule,

@@ -7,7 +7,6 @@ import { LoginComponent } from './login/login.component';
 
 // RESPONSABLE components
 import { AppRespComponent } from './app-resp/app-resp.component';
-import { DashboardComponent } from './app-resp/dashboard/dashboard.component';
 import { ProjetComponent } from './app-resp/projet/projet.component';
 import { RaccordementComponent } from './app-resp/raccordement/raccordement.component';
 
@@ -23,6 +22,7 @@ import {AccessDeniedComponent} from './access-denied/access-denied.component';
 import {ChefTechAuthGuard} from './chef-tech/chef-tech-auth.guard';
 import {DashboardChefTechComponent} from './chef-tech/dashboard-chef-tech/dashboard-chef-tech.component';
 import {SetPasswordComponent} from './app-rh/set-password/set-password.component';
+import {DashboardOoredooComponent} from './app-resp/dashboard-ooredoo/dashboard-ooredoo.component';
 
 const routes: Routes = [
   // default redirect
@@ -46,12 +46,12 @@ const routes: Routes = [
     canActivate: [AuthGuard],
     data: { roles: ['CHEFPROJET', 'RH', 'RESPONSABLE', 'ADMIN', 'OOREDOO'] },
     children: [
-      { path: 'dashboard/admin', component: DashboardComponent, canActivate: [AuthGuard], data: { roles: ['ADMIN'] } },
       { path: 'dashboard', component: ZoneComponent, canActivate: [AuthGuard], data: { roles: ['RESPONSABLE', 'CHEFPROJET'] } },
       { path: 'projets', component: ProjetComponent, canActivate: [AuthGuard], data: { roles: ['CHEFPROJET', 'ADMIN'] } },
       { path: 'operateurs', component: OperateurComponent, canActivate: [AuthGuard], data: { roles: ['CHEFPROJET', 'ADMIN'] } },
       { path: 'articles', component: ProduitComponent, canActivate: [AuthGuard], data: { roles: ['RESPONSABLE', 'CHEFPROJET'] } },
-      { path: 'raccordements', component: RaccordementComponent, canActivate: [AuthGuard], data: { roles: ['RESPONSABLE', 'CHEFPROJET','OOREDOO'] } },
+      { path: 'statistique', component: DashboardOoredooComponent, canActivate: [AuthGuard], data: { roles: ['ADMIN', 'RESPONSABLE', 'CHEFPROJET','OOREDOO'] } },
+      { path: 'raccordements', component: RaccordementComponent, canActivate: [AuthGuard], data: { roles: ['ADMIN', 'RESPONSABLE', 'CHEFPROJET','OOREDOO'] } },
       { path: 'addRaccordement', component: AddRaccordementComponent, canActivate: [AuthGuard], data: { roles: ['RESPONSABLE', 'CHEFPROJET'] } },
       { path: 'users', component: AppRhComponent, canActivate: [AuthGuard], data: { roles: ['ADMIN', 'CHEFPROJET', 'RH'] } },
     ],

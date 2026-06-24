@@ -467,23 +467,23 @@
 }
 .status-non-affecte {
   background: #e2e3e5 !important;
-  color: #383d41 !important;
+  color: #334d60 !important;
 }
 .status-non-fibre {
   background: #d6d8db !important;
-  color: #383d41 !important;
+  color: #000000 !important;
 }
 .status-non-disponible {
   background: #f5c6cb !important;
-  color: #721c24 !important;
+  color: #cd656c !important;
 }
 .status-rdv-rate {
   background: #f5c6cb !important;
-  color: #721c24 !important;
+  color: #c43721 !important;
 }
 .status-hors-zone {
   background: #ffe5d0 !important;
-  color: #9e5d00 !important;
+  color: #4d310b !important;
 }
 .status-inconnu {
   background: #e9ecef !important;

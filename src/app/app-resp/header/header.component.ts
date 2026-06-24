@@ -32,12 +32,12 @@ export class HeaderComponent implements OnInit {
 
     // Admin menu
     const adminMenu: MenuItem[] = [
-      { icon: 'fas fa-tachometer-alt', label: 'Tableau de bord', route: '/dashboard/admin', active: false },
+      { icon: 'fas fa-project-diagram text-white-900', label: 'Projets', route: '/projets', active: false },
     ]
 
     //Chef projet Menu
     const chefProjetMenu: MenuItem[] = [
-      { icon: 'fas fa-project-diagram text-white-900', label: 'Projets', route: '/projets', active: false },
+
       { icon: 'fas fa-tower-broadcast text-white-900', label: 'Operateurs', route: '/operateurs', active: false },
     ]
 
@@ -46,6 +46,7 @@ export class HeaderComponent implements OnInit {
       { icon: 'fas fa-route text-white-900', label: 'Tableau de bord', route: '/dashboard', active: false },
     ];
     const agentOoredooMenu: MenuItem[] = [
+      { icon: 'fas fa-chart-line text-white-900', label: 'Statistique', route: '/statistique', active: false },
       { icon: 'fas fa-network-wired text-white-900', label: 'Abonnés FTTH', route: '/raccordements', active: false },
     ];
     //Magasinier Menu
@@ -55,7 +56,7 @@ export class HeaderComponent implements OnInit {
 
     if (this.roleUser === 'CHEFPROJET') menu.push(...respMenu, ...agentOoredooMenu, ...chefProjetMenu, ...magasinierMenu, ...rhMenu);
     if (this.roleUser === 'RESPONSABLE') menu.push(...respMenu, ...agentOoredooMenu, ...magasinierMenu);
-    if (this.roleUser === 'ADMIN') menu.push(...adminMenu, ...agentOoredooMenu, ...chefProjetMenu, ...rhMenu);
+    if (this.roleUser === 'ADMIN') menu.push(...agentOoredooMenu, ...adminMenu, ...chefProjetMenu, ...rhMenu);
     if (this.roleUser === 'RH') menu.push(...rhMenu);
     if (this.roleUser === 'OOREDOO') menu.push(...agentOoredooMenu);
 

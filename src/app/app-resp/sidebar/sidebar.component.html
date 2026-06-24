@@ -11,10 +11,18 @@
 
     <!-- Enhanced header with better structure -->
     <div class="sidebar-header">
-      <div class="logo-wrapper">
+      <div class="logo-wrapper" *ngIf="role == 'OOREDOO'">
+        <img
+          [ngSrc]="'/STSLinKLogo.png'"
+          alt="STS LINK Logo"
+          class="dashboard-logo"
+          height="70" width="226"
+          priority/>
+      </div>
+      <div class="logo-wrapper" *ngIf="role != 'OOREDOO'">
         <img
           [ngSrc]="'/stslogo.png'"
-          alt="STSGroupe Logo"
+          alt="STS LINK Logo"
           class="dashboard-logo"
           height="70" width="226"
           priority/>

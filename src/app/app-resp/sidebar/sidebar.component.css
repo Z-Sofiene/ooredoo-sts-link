@@ -114,7 +114,7 @@
 }
 
 .logo-wrapper {
-  animation: logoFloatSpin 6s linear infinite; /* 6s for full rotation */
+  animation: logoFloatSpin 6.5s linear infinite; /* 6s for full rotation */
   display: flex;
   align-items: center;
   justify-content: center;

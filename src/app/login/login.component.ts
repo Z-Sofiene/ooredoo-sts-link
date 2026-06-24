@@ -52,14 +52,12 @@ export class LoginComponent {
         this.isLoading = false;
         this.onLoginSuccess();
 
-        if (roleUser === 'ADMIN') {
-          this.navigate('/dashboard/admin');
+        if (roleUser === 'ADMIN' || roleUser === 'OOREDOO') {
+          this.navigate('/statistique');
         } else if (roleUser === 'RESPONSABLE' || roleUser === 'CHEFPROJET') {
           this.navigate('/dashboard');
         } else if (roleUser === 'RH') {
           this.navigate('/users');
-        } else if (roleUser === 'OOREDOO') {
-          this.navigate('/raccordements');
         } else {
           this.gest.logout();
           this.navigate('/login');
