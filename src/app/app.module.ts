@@ -46,7 +46,9 @@ import {ClientComponent} from './app-resp/client/client.component';
 import { OperateurOoredooComponent } from './operateur-ooredoo/operateur-ooredoo.component';
 import { DetailRaccordementComponent } from './app-resp/raccordement/detail-raccordement/detail-raccordement.component';
 import { DashboardOoredooComponent } from './app-resp/dashboard-ooredoo/dashboard-ooredoo.component';
+import { Chart, registerables } from 'chart.js';
 
+Chart.register(...registerables);
 
 
 

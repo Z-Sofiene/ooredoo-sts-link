@@ -1,7 +1,7 @@
 import { Component, OnInit, AfterViewInit, ViewChild, ElementRef, OnDestroy } from '@angular/core';
 import { GestionService } from '../../gestion.service';
 import { Chart, registerables } from 'chart.js';
-
+Chart.register(...registerables);
 @Component({
   selector: 'app-dashboard-ooredoo',
   templateUrl: './dashboard-ooredoo.component.html',
