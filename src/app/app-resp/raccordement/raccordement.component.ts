@@ -369,7 +369,7 @@ export class RaccordementComponent implements OnInit {
     });
   }
 
-  confirmExport(selectedProjet: Projet) {
+  async confirmExport(selectedProjet: Projet) {
 
     const workbook = new ExcelJS.Workbook();
     const sheet = workbook.addWorksheet('Raccordements');
@@ -708,10 +708,47 @@ export class RaccordementComponent implements OnInit {
 
 
     sheet.getRow(1).values = [];
-    // =========================
-    // 6. EXPORT
-    // =========================
+// =========================
+// 6. EXPORT
+// =========================
 
+    try {
+      this.isLoadingPreview = true;
+
+      const buffer = await workbook.xlsx.writeBuffer();
+
+      const blob = new Blob(
+        [buffer],
+        {
+          type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+        }
+      );
+
+      const today = new Date();
+
+      const dateToday = `${String(today.getDate()).padStart(2, '0')}-${String(today.getMonth() + 1).padStart(2, '0')}-${today.getFullYear()}`;
+
+      saveAs(
+        blob,
+        `raccordements_${dateToday}.xlsx`
+      );
+
+      this.showPreviewModal = false;
+
+    } catch (error) {
+
+
+      console.error('Erreur export Excel : ', error);
+
+      alert('Une erreur est survenue pendant la génération du fichier Excel.');
+
+    } finally {
+
+      this.isLoadingPreview = false;
+
+    }
+
+/*
     workbook.xlsx.writeBuffer().then(buffer => {
 
       const blob = new Blob(
@@ -733,6 +770,7 @@ export class RaccordementComponent implements OnInit {
 
 
     this.showPreviewModal = false;
+    */
   }
 
 

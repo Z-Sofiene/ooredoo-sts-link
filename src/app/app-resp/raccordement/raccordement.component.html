@@ -433,6 +433,7 @@
       <!-- ===== EXPORT PREVIEW MODAL (styled with modal classes) ===== -->
       <div *ngIf="showPreviewModal && previewProjet" class="modal-overlay" (click)="showPreviewModal = false">
         <div class="modal-container preview-modal-modern" [class]="'theme-ooredoo'" (click)="$event.stopPropagation()" style="max-width:1400px;">
+
           <!-- Modal Header -->
           <div class="modal-header">
             <div class="header-content">
@@ -441,9 +442,15 @@
               </h3>
               <div class="operator-badge" style="font-size:0.8rem;">{{ previewData.length }} abonnés</div>
             </div>
-            <button class="close-button" (click)="showPreviewModal = false">
-              <i class="fas fa-times"></i>
+            <!-- Actions -->
+
+            <button class="btn-submit" (click)="confirmExport(previewProjet)"
+                    [disabled]="isLoadingPreview || previewData.length === 0">
+              <i class="fa fa-file-excel"></i> Export Excel
             </button>
+            <button class="btn-cancel" (click)="showPreviewModal = false">
+              <i class="fas fa-times"></i>
+              Fermer</button>
           </div>
 
           <!-- Info -->
@@ -505,14 +512,7 @@
             </table>
           </div>
 
-          <!-- Actions -->
-          <div class="bottom-modal-footer" style="border-radius:0 0 16px 16px;">
-            <button class="btn-cancel" (click)="showPreviewModal = false">Annuler</button>
-            <button class="btn-submit" (click)="confirmExport(previewProjet)"
-                    [disabled]="isLoadingPreview || previewData.length === 0">
-              <i class="fa fa-file-excel"></i> Export Excel
-            </button>
-          </div>
+
         </div>
       </div>
 

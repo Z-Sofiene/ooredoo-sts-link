@@ -230,6 +230,58 @@ export class DashboardOoredooComponent implements OnInit, AfterViewInit, OnDestr
     );
 
     // 5. Débit Pie
+    function getColorPalette(count: number): string[] {
+      const baseColors = ['#E30613', '#1F4E79', '#2E7D32', '#F57C00', '#6A1B9A'];
+      if (count <= baseColors.length) {
+        return baseColors.slice(0, count);
+      }
+
+      const colors = [...baseColors];
+      const goldenRatio = 0.618033988749895;
+      let hue = 0;
+
+      for (let i = baseColors.length; i < count; i++) {
+        hue = (hue + goldenRatio) % 1.0;
+        const h = Math.floor(hue * 360);
+        colors.push(`hsl(${h}, 70%, 50%)`);
+      }
+
+      return colors;
+    }
+
+    const debitCounts: { [key: string]: number } = {};
+    this.raccordements.forEach(r => {
+      const d = r.debit || 'Non défini';
+      debitCounts[d] = (debitCounts[d] || 0) + 1;
+    });
+
+    const labels = Object.keys(debitCounts);
+    const data = Object.values(debitCounts);
+    const colors = getColorPalette(labels.length);
+
+    this.charts.push(
+      new Chart(this.debitChartRef.nativeElement, {
+        type: 'pie',
+        data: {
+          labels: labels,
+          datasets: [{
+            data: data,
+            backgroundColor: colors
+          }]
+        },
+        options: {
+          responsive: true,
+          plugins: {
+            legend: {
+              position: 'right',
+              labels: { boxWidth: 12 }
+            }
+          }
+        }
+      } as any)
+    );
+
+    /*
     const debitCounts: { [key: string]: number } = {};
     this.raccordements.forEach(r => {
       const d = r.debit || 'Non défini';
@@ -251,6 +303,7 @@ export class DashboardOoredooComponent implements OnInit, AfterViewInit, OnDestr
         }
       } as any)
     );
+    */
 
     // 6. RDV Trend (line)
     const rdvMap = new Map<string, number>();
