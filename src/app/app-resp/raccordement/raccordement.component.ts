@@ -571,16 +571,15 @@ export class RaccordementComponent implements OnInit {
 
 
     sorted.forEach(row => {
+      const date_rdv = row.dateRDV ?? new Date();
 
+      const parsedDate = this.parseDate(date_rdv);
 
-      const formattedDate = row.dateRDV
-        ? `📅 ${this.formatDateForExcel(this.parseDate(row.dateRDV)!)}`
-        : 'Sans date';
-
-
+      const formattedDate = parsedDate
+        ? `📅 ${this.formatDateForExcel(parsedDate)}`
+        : `📅 ${this.formatDateForExcel(new Date())}`;
 
       const dataRow = sheet.getRow(currentRow++);
-
 
       dataRow.values = [
         row.label,
