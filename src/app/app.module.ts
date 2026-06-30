@@ -12,7 +12,7 @@ import { RaccordementComponent } from './app-resp/raccordement/raccordement.comp
 import { TacheComponent } from './app-resp/tache/tache.component';
 import {AuthGuard} from './auth.guard';
 import {GestionService} from './gestion.service';
-import {HttpClientModule} from '@angular/common/http';
+import {provideHttpClient, withInterceptorsFromDi} from '@angular/common/http';
 import {FormsModule, ReactiveFormsModule} from '@angular/forms';
 import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
 import { SidebarComponent } from './app-resp/sidebar/sidebar.component';
@@ -94,13 +94,13 @@ Chart.register(...registerables);
     BrowserModule,
     BrowserAnimationsModule,
     AppRoutingModule,
-    HttpClientModule,
     FormsModule,
     ReactiveFormsModule,
     BaseChartDirective,
     NgOptimizedImage,
   ],
   providers: [
+    provideHttpClient(withInterceptorsFromDi()),
     GestionService,
     GestionChefTechService,
     ChefTechAuthGuard,
